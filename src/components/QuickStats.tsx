@@ -2,13 +2,17 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Clock, CheckCircle, AlertCircle, Book } from 'lucide-react';
+import { getTodayClassCount, getNextClass } from '@/utils/timetable';
 
 const QuickStats = () => {
+  const todayClassCount = getTodayClassCount();
+  const nextClass = getNextClass();
+  
   const stats = [
     {
       title: 'Today\'s Classes',
-      value: '4',
-      description: 'Next: Math at 10:00 AM',
+      value: todayClassCount.toString(),
+      description: `Next: ${nextClass}`,
       icon: Clock,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50'

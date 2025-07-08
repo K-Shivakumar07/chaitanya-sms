@@ -12,12 +12,12 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo and Title */}
           <Link to="/" className="flex items-center space-x-3">
-            <div className="bg-blue-600 text-white p-2 rounded-lg">
-              <User className="w-6 h-6" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">StudyHub</h1>
-              <p className="text-sm text-gray-500">Student Management System</p>
+            <div className="h-12 w-auto">
+              <img 
+                src="/lovable-uploads/63f128ca-12f8-480a-9026-c6299e38a2c2.png" 
+                alt="Chaitanya College Logo" 
+                className="h-full w-auto object-contain"
+              />
             </div>
           </Link>
 
