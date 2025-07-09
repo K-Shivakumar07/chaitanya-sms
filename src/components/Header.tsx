@@ -1,11 +1,22 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { User, Bell, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 const Header = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Navigate to home page with search parameter
+      navigate(`/?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
     <header className="bg-white shadow-sm border-b">
       <div className="container mx-auto px-4 py-4">
@@ -23,13 +34,15 @@ const Header = () => {
 
           {/* Search Bar */}
           <div className="hidden md:flex items-center space-x-4 flex-1 max-w-md mx-8">
-            <div className="relative flex-1">
+            <form onSubmit={handleSearch} className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input 
                 placeholder="Search materials, notes, assignments..." 
                 className="pl-10"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </div>
+            </form>
           </div>
 
           {/* Right Side Actions */}

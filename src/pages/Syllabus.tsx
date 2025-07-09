@@ -11,48 +11,40 @@ import Header from '@/components/Header';
 const Syllabus = () => {
   const subjects = [
     {
-      name: 'Mathematics',
-      code: 'MATH-101',
+      name: 'Operational Research',
+      code: 'OR-301',
       progress: 75,
-      totalChapters: 12,
-      completedChapters: 9,
-      color: 'bg-blue-500',
-      chapters: [
-        { name: 'Algebra Basics', status: 'completed', duration: '2 weeks' },
-        { name: 'Calculus Introduction', status: 'completed', duration: '3 weeks' },
-        { name: 'Trigonometry', status: 'completed', duration: '2 weeks' },
-        { name: 'Statistics', status: 'in-progress', duration: '2 weeks' },
-        { name: 'Probability', status: 'pending', duration: '2 weeks' }
-      ]
+      color: 'bg-blue-500'
     },
     {
-      name: 'Physics',
-      code: 'PHY-101',
-      progress: 60,
-      totalChapters: 10,
-      completedChapters: 6,
-      color: 'bg-green-500',
-      chapters: [
-        { name: 'Mechanics', status: 'completed', duration: '3 weeks' },
-        { name: 'Thermodynamics', status: 'completed', duration: '2 weeks' },
-        { name: 'Waves and Sound', status: 'in-progress', duration: '2 weeks' },
-        { name: 'Electricity', status: 'pending', duration: '3 weeks' },
-        { name: 'Magnetism', status: 'pending', duration: '2 weeks' }
-      ]
-    },
-    {
-      name: 'Chemistry',
-      code: 'CHEM-101',
+      name: 'Software Engineering',
+      code: 'SE-301',
       progress: 80,
-      totalChapters: 8,
-      completedChapters: 6,
-      color: 'bg-purple-500',
-      chapters: [
-        { name: 'Atomic Structure', status: 'completed', duration: '2 weeks' },
-        { name: 'Chemical Bonding', status: 'completed', duration: '3 weeks' },
-        { name: 'Organic Chemistry', status: 'in-progress', duration: '4 weeks' },
-        { name: 'Inorganic Chemistry', status: 'pending', duration: '3 weeks' }
-      ]
+      color: 'bg-green-500'
+    },
+    {
+      name: 'Operating System',
+      code: 'OS-301',
+      progress: 70,
+      color: 'bg-purple-500'
+    },
+    {
+      name: 'Data Visualization',
+      code: 'DV-301',
+      progress: 65,
+      color: 'bg-orange-500'
+    },
+    {
+      name: 'Machine Learning',
+      code: 'ML-301',
+      progress: 60,
+      color: 'bg-red-500'
+    },
+    {
+      name: 'Constitution of India',
+      code: 'CI-301',
+      progress: 85,
+      color: 'bg-yellow-500'
     }
   ];
 
@@ -107,32 +99,15 @@ const Syllabus = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-2xl font-bold text-gray-900">{subject.progress}%</p>
-                    <p className="text-sm text-gray-500">
-                      {subject.completedChapters}/{subject.totalChapters} chapters
-                    </p>
+                    <p className="text-sm text-gray-500">Progress</p>
                   </div>
                 </div>
                 <Progress value={subject.progress} className="mt-4" />
               </CardHeader>
               
               <CardContent className="pt-6">
-                <div className="grid gap-4">
-                  {subject.chapters.map((chapter, chapterIndex) => (
-                    <div key={chapterIndex} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className="flex items-center space-x-3">
-                        <div className={`p-2 rounded-lg ${getStatusColor(chapter.status)} flex items-center justify-center`}>
-                          {getStatusIcon(chapter.status)}
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-gray-900">{chapter.name}</h4>
-                          <p className="text-sm text-gray-500">Duration: {chapter.duration}</p>
-                        </div>
-                      </div>
-                      <Badge className={getStatusColor(chapter.status)}>
-                        {chapter.status.replace('-', ' ')}
-                      </Badge>
-                    </div>
-                  ))}
+                <div className="text-center py-8">
+                  <p className="text-gray-600">Subject syllabus and course materials will be updated by the faculty.</p>
                 </div>
               </CardContent>
             </Card>
