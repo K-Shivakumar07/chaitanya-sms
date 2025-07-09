@@ -1,69 +1,59 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Book, Clock, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Book, Upload, Eye, FileText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
 import Header from '@/components/Header';
 
 const Syllabus = () => {
+  const [uploadedFiles, setUploadedFiles] = useState<{[key: string]: File}>({});
+  
   const subjects = [
     {
       name: 'Operational Research',
-      code: 'OR-301',
-      progress: 75,
       color: 'bg-blue-500'
     },
     {
       name: 'Software Engineering',
-      code: 'SE-301',
-      progress: 80,
       color: 'bg-green-500'
     },
     {
       name: 'Operating System',
-      code: 'OS-301',
-      progress: 70,
       color: 'bg-purple-500'
     },
     {
       name: 'Data Visualization',
-      code: 'DV-301',
-      progress: 65,
       color: 'bg-orange-500'
     },
     {
       name: 'Machine Learning',
-      code: 'ML-301',
-      progress: 60,
       color: 'bg-red-500'
     },
     {
       name: 'Constitution of India',
-      code: 'CI-301',
-      progress: 85,
       color: 'bg-yellow-500'
     }
   ];
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'in-progress': return 'bg-yellow-100 text-yellow-800';
-      case 'pending': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+  const handleFileUpload = (subjectName: string, file: File) => {
+    setUploadedFiles(prev => ({
+      ...prev,
+      [subjectName]: file
+    }));
+  };
+
+  const handleViewSyllabus = (subjectName: string) => {
+    const file = uploadedFiles[subjectName];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      window.open(url, '_blank');
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed': return <CheckCircle className="w-4 h-4" />;
-      case 'in-progress': return <Clock className="w-4 h-4" />;
-      default: return <Book className="w-4 h-4" />;
-    }
-  };
+  const allSyllabusUploaded = subjects.every(subject => uploadedFiles[subject.name]);
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -94,24 +84,76 @@ const Syllabus = () => {
                     </div>
                     <div>
                       <CardTitle className="text-xl">{subject.name}</CardTitle>
-                      <p className="text-gray-600">{subject.code}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-gray-900">{subject.progress}%</p>
-                    <p className="text-sm text-gray-500">Progress</p>
+                  <div className="flex items-center space-x-2">
+                    {uploadedFiles[subject.name] && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewSyllabus(subject.name)}
+                        className="flex items-center space-x-1"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span>View</span>
+                      </Button>
+                    )}
                   </div>
                 </div>
-                <Progress value={subject.progress} className="mt-4" />
               </CardHeader>
               
               <CardContent className="pt-6">
-                <div className="text-center py-8">
-                  <p className="text-gray-600">Subject syllabus and course materials will be updated by the faculty.</p>
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="w-full max-w-md">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Upload Syllabus Copy
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <Input
+                        type="file"
+                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            handleFileUpload(subject.name, file);
+                          }
+                        }}
+                        className="flex-1"
+                      />
+                      <Upload className="w-5 h-5 text-gray-400" />
+                    </div>
+                    {uploadedFiles[subject.name] && (
+                      <p className="text-sm text-green-600 mt-1 flex items-center">
+                        <FileText className="w-4 h-4 mr-1" />
+                        {uploadedFiles[subject.name].name}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
           ))}
+          
+          {/* View All Syllabus Button */}
+          {allSyllabusUploaded && (
+            <div className="flex justify-center pt-6">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-8 py-3 rounded-lg shadow-lg transform transition-all hover:scale-105"
+                onClick={() => {
+                  subjects.forEach(subject => {
+                    if (uploadedFiles[subject.name]) {
+                      const url = URL.createObjectURL(uploadedFiles[subject.name]);
+                      window.open(url, '_blank');
+                    }
+                  });
+                }}
+              >
+                <FileText className="w-5 h-5 mr-2" />
+                View Your Syllabus
+              </Button>
+            </div>
+          )}
         </div>
       </main>
     </div>
