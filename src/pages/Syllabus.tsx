@@ -110,74 +110,46 @@ const Syllabus = () => {
                       <CardTitle className="text-xl">{subject.name}</CardTitle>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    {uploadedFiles[subject.name] && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleViewSyllabus(subject.name)}
-                        className="flex items-center space-x-1"
-                      >
-                        <Eye className="w-4 h-4" />
-                        <span>View</span>
-                      </Button>
-                    )}
-                  </div>
                 </div>
               </CardHeader>
               
               <CardContent className="pt-6">
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="w-full max-w-md">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Upload Syllabus Copy
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="file"
-                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            handleFileUpload(subject.name, file);
-                          }
-                        }}
-                        className="flex-1"
-                      />
-                      <Upload className="w-5 h-5 text-gray-400" />
+                {!uploadedFiles[subject.name] ? (
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="w-full max-w-md">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Upload Syllabus Copy
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <Input
+                          type="file"
+                          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              handleFileUpload(subject.name, file);
+                            }
+                          }}
+                          className="flex-1"
+                        />
+                        <Upload className="w-5 h-5 text-gray-400" />
+                      </div>
                     </div>
-                    {uploadedFiles[subject.name] && (
-                      <p className="text-sm text-green-600 mt-1 flex items-center">
-                        <FileText className="w-4 h-4 mr-1" />
-                        {uploadedFiles[subject.name].name}
-                      </p>
-                    )}
                   </div>
-                </div>
+                ) : (
+                  <div className="flex justify-center">
+                    <Button
+                      onClick={() => handleViewSyllabus(subject.name)}
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 py-2 rounded-lg shadow-lg transform transition-all hover:scale-105"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      View Your Syllabus
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
-          
-          {/* View Your Syllabus Button */}
-          {Object.keys(uploadedFiles).length > 0 && (
-            <div className="flex justify-center pt-6">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-8 py-3 rounded-lg shadow-lg transform transition-all hover:scale-105"
-                onClick={() => {
-                  Object.entries(uploadedFiles).forEach(([subjectName, file]) => {
-                    if (file instanceof File) {
-                      const url = URL.createObjectURL(file);
-                      window.open(url, '_blank');
-                    }
-                  });
-                }}
-              >
-                <FileText className="w-5 h-5 mr-2" />
-                View Your Syllabus
-              </Button>
-            </div>
-          )}
         </div>
       </main>
     </div>
