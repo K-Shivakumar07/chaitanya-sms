@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Book, Upload, Eye, FileText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +9,17 @@ import Header from '@/components/Header';
 
 const Syllabus = () => {
   const [uploadedFiles, setUploadedFiles] = useState<{[key: string]: File}>({});
+  
+  // Load saved files from localStorage on component mount
+  useEffect(() => {
+    const savedFiles = localStorage.getItem('syllabusFiles');
+    if (savedFiles) {
+      const parsedFiles = JSON.parse(savedFiles);
+      // Convert the saved file data back to File objects if needed
+      // For now, we'll just track that files were uploaded
+      setUploadedFiles(parsedFiles);
+    }
+  }, []);
   
   const subjects = [
     {
@@ -38,10 +49,23 @@ const Syllabus = () => {
   ];
 
   const handleFileUpload = (subjectName: string, file: File) => {
-    setUploadedFiles(prev => ({
-      ...prev,
+    const updatedFiles = {
+      ...uploadedFiles,
       [subjectName]: file
-    }));
+    };
+    setUploadedFiles(updatedFiles);
+    
+    // Save to localStorage permanently
+    const fileData = {
+      ...updatedFiles,
+      [subjectName]: {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified
+      }
+    };
+    localStorage.setItem('syllabusFiles', JSON.stringify(fileData));
   };
 
   const handleViewSyllabus = (subjectName: string) => {
@@ -134,16 +158,16 @@ const Syllabus = () => {
             </Card>
           ))}
           
-          {/* View All Syllabus Button */}
-          {allSyllabusUploaded && (
+          {/* View Your Syllabus Button */}
+          {Object.keys(uploadedFiles).length > 0 && (
             <div className="flex justify-center pt-6">
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-8 py-3 rounded-lg shadow-lg transform transition-all hover:scale-105"
                 onClick={() => {
-                  subjects.forEach(subject => {
-                    if (uploadedFiles[subject.name]) {
-                      const url = URL.createObjectURL(uploadedFiles[subject.name]);
+                  Object.entries(uploadedFiles).forEach(([subjectName, file]) => {
+                    if (file instanceof File) {
+                      const url = URL.createObjectURL(file);
                       window.open(url, '_blank');
                     }
                   });

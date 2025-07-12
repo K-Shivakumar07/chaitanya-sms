@@ -19,7 +19,7 @@ const QuickStats = () => {
     },
     {
       title: 'Pending Assignments',
-      value: '3',
+      value: '0',
       description: 'Due this week',
       icon: AlertCircle,
       color: 'text-orange-600',
@@ -27,7 +27,7 @@ const QuickStats = () => {
     },
     {
       title: 'Completed Tasks',
-      value: '12',
+      value: '0',
       description: 'This month',
       icon: CheckCircle,
       color: 'text-green-600',
@@ -35,7 +35,7 @@ const QuickStats = () => {
     },
     {
       title: 'Study Materials',
-      value: '48',
+      value: '0',
       description: 'Available resources',
       icon: Book,
       color: 'text-purple-600',
