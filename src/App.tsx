@@ -34,8 +34,9 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <AssistantBot />
       </BrowserRouter>
-      <AssistantBot />
+
     </TooltipProvider>
   </QueryClientProvider>
 );
