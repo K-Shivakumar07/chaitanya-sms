@@ -195,3 +195,52 @@ export const searchDocuments = (query: string): SearchResult[] => {
 };
 
 export const documentIndex = allDocuments;
+
+export interface Suggestion {
+  value: string;
+  type: 'title' | 'subject';
+  count: number;
+}
+
+const titleTerms = Array.from(new Set(allDocuments.map((d) => d.title)));
+const subjectTerms = Array.from(new Set(allDocuments.map((d) => d.subject)));
+
+export const getSuggestions = (query: string, limit = 6): Suggestion[] => {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+
+  const rank = (value: string) => {
+    const v = value.toLowerCase();
+    if (v.startsWith(q)) return 0;
+    if (new RegExp(`\\b${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(v)) return 1;
+    if (v.includes(q)) return 2;
+    return -1;
+  };
+
+  const candidates: Array<Suggestion & { score: number }> = [];
+
+  subjectTerms.forEach((subject) => {
+    const score = rank(subject);
+    if (score >= 0) {
+      candidates.push({
+        value: subject,
+        type: 'subject',
+        count: allDocuments.filter((d) => d.subject === subject).length,
+        score,
+      });
+    }
+  });
+
+  titleTerms.forEach((title) => {
+    const score = rank(title);
+    if (score >= 0) {
+      candidates.push({ value: title, type: 'title', count: 1, score: score + 0.5 });
+    }
+  });
+
+  return candidates
+    .sort((a, b) => a.score - b.score || a.value.localeCompare(b.value))
+    .slice(0, limit)
+    .map(({ score, ...rest }) => rest);
+};
+
