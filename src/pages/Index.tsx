@@ -3,14 +3,18 @@ import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Book, Calendar, FileText, Download, Bell, User, Clock, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import QuickStats from '@/components/QuickStats';
 import RecentActivity from '@/components/RecentActivity';
+import { searchDocuments, SearchResult } from '@/data/documents';
 
 const Index = () => {
   const [searchParams] = useSearchParams();
   const [filteredFeatures, setFilteredFeatures] = useState([]);
+  const [documentResults, setDocumentResults] = useState<SearchResult[]>([]);
+
   
   const features = [
     {
