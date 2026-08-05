@@ -1,27 +1,33 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Bell, Search } from 'lucide-react';
+import { User, Bell, Search, FileText, Book, ClipboardList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { searchDocuments, SearchResult } from '@/data/documents';
+
+const sectionSuggestions = [
+  { title: 'Study Materials', link: '/materials' },
+  { title: 'Notes & PDFs', link: '/notes' },
+  { title: 'Assignments', link: '/assignments' },
+  { title: 'Timetable', link: '/timetable' },
+  { title: 'Syllabus', link: '/syllabus' },
+  { title: 'Announcements', link: '/announcements' },
+];
+
+const kindIcon = (kind: string) => {
+  if (kind === 'material') return <Book className="w-4 h-4 text-purple-500" />;
+  if (kind === 'note') return <FileText className="w-4 h-4 text-orange-500" />;
+  return <ClipboardList className="w-4 h-4 text-red-500" />;
+};
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+  const [docResults, setDocResults] = useState<SearchResult[]>([]);
+  const [sectionResults, setSectionResults] = useState<typeof sectionSuggestions>([]);
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-
-  const searchSuggestions = [
-    'Materials', 'Study Materials', 'Lecture Notes', 'Lab Materials',
-    'Assignments', 'Homework', 'Projects', 'Submissions',
-    'Notes', 'Class Notes', 'Personal Notes',
-    'Timetable', 'Schedule', 'Classes',
-    'Syllabus', 'Course Outline',
-    'Announcements', 'News', 'Updates',
-    'Operational Research', 'Software Engineering', 'Operating System',
-    'Data Visualization', 'Machine Learning', 'Constitution of India'
-  ];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -35,13 +41,14 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    if (searchQuery.trim() && searchQuery.length > 1) {
-      const filtered = searchSuggestions.filter(suggestion =>
-        suggestion.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredSuggestions(filtered.slice(0, 5));
+    const q = searchQuery.trim().toLowerCase();
+    if (q.length > 1) {
+      setDocResults(searchDocuments(q).slice(0, 6));
+      setSectionResults(sectionSuggestions.filter((s) => s.title.toLowerCase().includes(q)).slice(0, 3));
       setShowSuggestions(true);
     } else {
+      setDocResults([]);
+      setSectionResults([]);
       setShowSuggestions(false);
     }
   }, [searchQuery]);
@@ -54,9 +61,8 @@ const Header = () => {
     }
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setSearchQuery(suggestion);
-    navigate(`/?search=${encodeURIComponent(suggestion)}`);
+  const goTo = (link: string) => {
+    navigate(link);
     setShowSuggestions(false);
   };
 
@@ -88,23 +94,56 @@ const Header = () => {
               />
               
               {/* Search Suggestions */}
-              {showSuggestions && filteredSuggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-48 overflow-y-auto">
-                  {filteredSuggestions.map((suggestion, index) => (
+              {showSuggestions && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-80 overflow-y-auto">
+                  {docResults.length === 0 && sectionResults.length === 0 && (
+                    <div className="px-4 py-3 text-sm text-gray-500">No documents found</div>
+                  )}
+
+                  {docResults.map((doc, index) => (
                     <button
-                      key={index}
+                      key={`doc-${index}`}
                       type="button"
-                      className="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm border-b border-gray-100 last:border-b-0"
-                      onClick={() => handleSuggestionClick(suggestion)}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-50 border-b border-gray-100 flex items-start gap-2"
+                      onClick={() => goTo(doc.link)}
                     >
-                      <Search className="inline w-3 h-3 mr-2 text-gray-400" />
-                      {suggestion}
+                      <span className="mt-0.5">{kindIcon(doc.kind)}</span>
+                      <span className="flex-1">
+                        <span className="block text-sm font-medium text-gray-900">{doc.title}</span>
+                        <span className="block text-xs text-gray-500">
+                          {doc.kindLabel} • {doc.subject} • {doc.meta}
+                        </span>
+                      </span>
                     </button>
                   ))}
+
+                  {sectionResults.map((s, index) => (
+                    <button
+                      key={`sec-${index}`}
+                      type="button"
+                      className="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm border-b border-gray-100 last:border-b-0"
+                      onClick={() => goTo(s.link)}
+                    >
+                      <Search className="inline w-3 h-3 mr-2 text-gray-400" />
+                      Go to {s.title}
+                    </button>
+                  ))}
+
+                  <button
+                    type="button"
+                    className="w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-50"
+                    onClick={() => {
+                      navigate(`/?search=${encodeURIComponent(searchQuery.trim())}`);
+                      setShowSuggestions(false);
+                    }}
+                  >
+                    See all results for "{searchQuery.trim()}"
+                  </button>
                 </div>
               )}
             </form>
           </div>
+
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
