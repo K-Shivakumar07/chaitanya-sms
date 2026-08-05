@@ -13,6 +13,7 @@ import Assignments from "./pages/Assignments";
 import Announcements from "./pages/Announcements";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import AssistantBot from "./components/AssistantBot";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      <AssistantBot />
     </TooltipProvider>
   </QueryClientProvider>
 );
