@@ -91,7 +91,7 @@ const AssistantBot = () => {
       <div className="relative">
         {/* Cloud message rendered outside the circle */}
         {!open && cloud && (
-          <div className="absolute right-full bottom-6 mr-3 w-52 animate-fade-in">
+          <div className="absolute right-full bottom-6 mr-3 w-52 animate-in fade-in slide-in-from-right-2">
             <div className="relative rounded-2xl bg-white px-4 py-2 text-sm text-gray-800 shadow-xl border">
               {cloud}
               <span className="absolute -right-1.5 bottom-3 h-3 w-3 rotate-45 bg-white border-r border-b" />
