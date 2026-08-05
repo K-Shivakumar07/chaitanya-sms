@@ -1,10 +1,12 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Bell, Search, FileText, Book, ClipboardList, Tag, CornerDownLeft } from 'lucide-react';
+import { User, Search, FileText, Book, ClipboardList, Tag, CornerDownLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import NotificationsBell from '@/components/NotificationsBell';
 import { searchDocuments, getSuggestions, SearchResult, Suggestion } from '@/data/documents';
+
 
 const sectionSuggestions = [
   { title: 'Study Materials', link: '/materials' },
@@ -282,12 +284,8 @@ const Header = () => {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                3
-              </span>
-            </Button>
+            <NotificationsBell />
+
             <Link to="/profile">
               <Button variant="ghost" size="sm">
                 <User className="w-5 h-5 mr-2" />
