@@ -7,65 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import Header from '@/components/Header';
+import { materials } from '@/data/documents';
 
 const Materials = () => {
-  const materials = [
-    {
-      id: 1,
-      title: 'Mathematics Textbook - Linear Algebra',
-      subject: 'Mathematics',
-      type: 'textbook',
-      format: 'PDF',
-      size: '15.2 MB',
-      uploadDate: '2024-01-15',
-      downloads: 234,
-      description: 'Comprehensive guide to linear algebra concepts and applications'
-    },
-    {
-      id: 2,
-      title: 'Physics Lab Manual',
-      subject: 'Physics',
-      type: 'manual',
-      format: 'PDF',
-      size: '8.7 MB',
-      uploadDate: '2024-01-10',
-      downloads: 156,
-      description: 'Step-by-step laboratory experiments and procedures'
-    },
-    {
-      id: 3,
-      title: 'Chemistry Reaction Videos',
-      subject: 'Chemistry',
-      type: 'video',
-      format: 'MP4',
-      size: '125 MB',
-      uploadDate: '2024-01-08',
-      downloads: 89,
-      description: 'Visual demonstrations of chemical reactions'
-    },
-    {
-      id: 4,
-      title: 'English Literature Collection',
-      subject: 'English',
-      type: 'reference',
-      format: 'PDF',
-      size: '22.1 MB',
-      uploadDate: '2024-01-05',
-      downloads: 178,
-      description: 'Classic literature texts and analysis guides'
-    },
-    {
-      id: 5,
-      title: 'Computer Science Online Resources',
-      subject: 'Computer Science',
-      type: 'link',
-      format: 'Link',
-      size: '-',
-      uploadDate: '2024-01-03',
-      downloads: 67,
-      description: 'Curated list of programming tutorials and documentation'
-    }
-  ];
+
 
   const subjects = ['All', 'Mathematics', 'Physics', 'Chemistry', 'English', 'Computer Science'];
   const [selectedSubject, setSelectedSubject] = React.useState('All');
