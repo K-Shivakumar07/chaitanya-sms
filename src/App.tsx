@@ -13,6 +13,7 @@ import Assignments from "./pages/Assignments";
 import Announcements from "./pages/Announcements";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import Assistant from "./pages/Assistant";
 import AssistantBot from "./components/AssistantBot";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/assignments" element={<Assignments />} />
           <Route path="/announcements" element={<Announcements />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/assistant" element={<Assistant />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <AssistantBot />
