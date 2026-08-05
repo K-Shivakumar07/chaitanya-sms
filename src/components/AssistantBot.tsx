@@ -22,14 +22,26 @@ const AssistantBot = () => {
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    let gotTime = false;
     const onTime = () => {
-      const t = video.currentTime;
+      gotTime = true;
+      const t = video!.currentTime;
       const hit = GESTURE_WINDOWS.find((w) => t >= w.start && t <= w.end);
       setCloud(hit ? hit.message : null);
     };
-    video.addEventListener('timeupdate', onTime);
-    return () => video.removeEventListener('timeupdate', onTime);
+    video?.addEventListener('timeupdate', onTime);
+
+    // Fallback: if the video can't play, still cycle the cloud messages.
+    let i = 0;
+    const fallback = window.setInterval(() => {
+      if (gotTime) return;
+      setCloud((prev) => (prev ? null : GESTURE_WINDOWS[i++ % GESTURE_WINDOWS.length].message));
+    }, 3000);
+
+    return () => {
+      video?.removeEventListener('timeupdate', onTime);
+      window.clearInterval(fallback);
+    };
   }, []);
 
   const handleAsk = (e: React.FormEvent) => {
