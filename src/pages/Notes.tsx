@@ -6,34 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
+import { notes } from '@/data/documents';
 
 const Notes = () => {
-  const notes = [
-    {
-      title: 'Calculus Notes - Chapter 5',
-      subject: 'Mathematics',
-      date: '2024-01-20',
-      size: '2.3 MB',
-      pages: 15,
-      type: 'lecture'
-    },
-    {
-      title: 'Physics Lab Report Template',
-      subject: 'Physics',
-      date: '2024-01-18',
-      size: '1.8 MB',
-      pages: 8,
-      type: 'template'
-    },
-    {
-      title: 'Organic Chemistry Summary',
-      subject: 'Chemistry',
-      date: '2024-01-15',
-      size: '4.2 MB',
-      pages: 22,
-      type: 'summary'
-    }
-  ];
+
 
   return (
     <div className="min-h-screen bg-gray-50">
