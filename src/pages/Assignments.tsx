@@ -6,34 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
+import { assignments } from '@/data/documents';
 
 const Assignments = () => {
-  const assignments = [
-    {
-      title: 'Physics Lab Report',
-      subject: 'Physics',
-      dueDate: '2024-01-25',
-      status: 'pending',
-      priority: 'high',
-      description: 'Complete the thermodynamics experiment report'
-    },
-    {
-      title: 'Math Problem Set 5',
-      subject: 'Mathematics',
-      dueDate: '2024-01-28',
-      status: 'in-progress',
-      priority: 'medium',
-      description: 'Solve calculus integration problems'
-    },
-    {
-      title: 'Chemistry Essay',
-      subject: 'Chemistry',
-      dueDate: '2024-02-02',
-      status: 'pending',
-      priority: 'low',
-      description: 'Write about organic compounds applications'
-    }
-  ];
+
 
   const getStatusColor = (status: string) => {
     switch (status) {
