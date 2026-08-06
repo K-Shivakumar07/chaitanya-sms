@@ -1,1 +1,4 @@
 project_id = "hlrhgyfijxukjelckcyn"
+
+[functions.campus-ai]
+verify_jwt = false
