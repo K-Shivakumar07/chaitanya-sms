@@ -29,18 +29,9 @@ async function buildContext(semester: number) {
       supabase.from("deadlines").select("title,detail,category,due_date,urgent").eq("semester", semester).order("due_date"),
     ]);
 
-  const subjectList = subjects.data ?? [];
-
-  const syllabusBySubject = subjectList.map((s) => {
-    const units = (syllabus.data ?? []).filter(() => true);
-    return { subject: s.name, short: s.short_name, faculty: s.faculty, units };
-  });
-
   return {
-    subjects: subjectList,
-    syllabus: (syllabus.data ?? []).length,
+    subjects: subjects.data ?? [],
     syllabusUnits: syllabus.data ?? [],
-    syllabusBySubject: syllabusBySubject.length,
     timetable: timetable.data ?? [],
     materials: materials.data ?? [],
     notes: notes.data ?? [],
