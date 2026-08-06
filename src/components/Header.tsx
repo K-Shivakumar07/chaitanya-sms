@@ -1,12 +1,18 @@
-
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Search, FileText, Book, ClipboardList, Tag, CornerDownLeft } from 'lucide-react';
+import { User, Search, FileText, Book, ClipboardList, Tag, CornerDownLeft, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import NotificationsBell from '@/components/NotificationsBell';
-import { searchDocuments, getSuggestions, SearchResult, Suggestion } from '@/data/documents';
-
+import {
+  buildDocumentIndex,
+  searchDocuments,
+  getSuggestions,
+  SearchResult,
+  Suggestion,
+} from '@/data/documents';
+import { useMaterials, useNotes, useAssignments } from '@/hooks/useSemesterData';
+import { useSemester, romanSemester } from '@/context/SemesterContext';
 
 const sectionSuggestions = [
   { title: 'Study Materials', link: '/materials' },
@@ -52,6 +58,16 @@ const Header = () => {
   const [sectionResults, setSectionResults] = useState<typeof sectionSuggestions>([]);
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { semester } = useSemester();
+
+  const { data: materials } = useMaterials();
+  const { data: notes } = useNotes();
+  const { data: assignments } = useAssignments();
+
+  const docs = useMemo(
+    () => buildDocumentIndex(materials, notes, assignments),
+    [materials, notes, assignments],
+  );
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -59,7 +75,6 @@ const Header = () => {
         setShowSuggestions(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -67,8 +82,8 @@ const Header = () => {
   useEffect(() => {
     const q = searchQuery.trim().toLowerCase();
     if (q.length > 0) {
-      setAutocomplete(getSuggestions(q, 5));
-      setDocResults(searchDocuments(q).slice(0, 5));
+      setAutocomplete(getSuggestions(docs, q, 5));
+      setDocResults(searchDocuments(docs, q).slice(0, 5));
       setSectionResults(sectionSuggestions.filter((s) => s.title.toLowerCase().includes(q)).slice(0, 3));
       setShowSuggestions(true);
     } else {
@@ -78,7 +93,7 @@ const Header = () => {
       setShowSuggestions(false);
     }
     setActiveIndex(-1);
-  }, [searchQuery]);
+  }, [searchQuery, docs]);
 
   const items = useMemo<Item[]>(() => {
     const list: Item[] = [
@@ -91,7 +106,7 @@ const Header = () => {
   }, [autocomplete, docResults, sectionResults, searchQuery]);
 
   const runSearch = (query: string) => {
-    navigate(`/?search=${encodeURIComponent(query.trim())}`);
+    navigate(`/dashboard?search=${encodeURIComponent(query.trim())}`);
     setShowSuggestions(false);
   };
 
@@ -115,14 +130,11 @@ const Header = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (activeIndex >= 0 && items[activeIndex]) {
-      selectItem(items[activeIndex]);
-      return;
-    }
-    if (searchQuery.trim()) runSearch(searchQuery);
+    if (activeIndex >= 0 && items[activeIndex]) selectItem(items[activeIndex]);
+    else if (searchQuery.trim()) runSearch(searchQuery);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!showSuggestions || items.length === 0) return;
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -152,23 +164,21 @@ const Header = () => {
     <header className="bg-white shadow-sm border-b">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo and Title */}
-          <Link to="/" className="flex items-center space-x-3">
+          <Link to="/dashboard" className="flex items-center space-x-3">
             <div className="h-12 w-auto">
-              <img 
-                src="/lovable-uploads/63f128ca-12f8-480a-9026-c6299e38a2c2.png" 
-                alt="Chaitanya College Logo" 
+              <img
+                src="/lovable-uploads/63f128ca-12f8-480a-9026-c6299e38a2c2.png"
+                alt="Chaitanya College Logo"
                 className="h-full w-auto object-contain"
               />
             </div>
           </Link>
 
-          {/* Search Bar */}
           <div className="hidden md:flex items-center space-x-4 flex-1 max-w-md mx-8" ref={searchRef}>
             <form onSubmit={handleSearch} className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input 
-                placeholder="Search materials, notes, assignments..." 
+              <Input
+                placeholder="Search materials, notes, assignments..."
                 className="pl-10"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -178,8 +188,7 @@ const Header = () => {
                 aria-expanded={showSuggestions}
                 aria-autocomplete="list"
               />
-              
-              {/* Search Suggestions */}
+
               {showSuggestions && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-y-auto">
                   {items.length <= 1 && autocomplete.length === 0 && docResults.length === 0 && (
@@ -281,9 +290,16 @@ const Header = () => {
             </form>
           </div>
 
+          <div className="flex items-center space-x-2 md:space-x-4">
+            {semester && (
+              <Link to="/">
+                <Button variant="outline" size="sm" className="hidden sm:inline-flex">
+                  <GraduationCap className="w-4 h-4 mr-2" />
+                  Sem {romanSemester(semester)} · Change
+                </Button>
+              </Link>
+            )}
 
-          {/* Right Side Actions */}
-          <div className="flex items-center space-x-4">
             <NotificationsBell />
 
             <Link to="/profile">
