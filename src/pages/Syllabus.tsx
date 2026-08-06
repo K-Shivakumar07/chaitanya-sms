@@ -15,11 +15,22 @@ const Syllabus = () => {
     const savedFiles = localStorage.getItem('syllabusFiles');
     if (savedFiles) {
       const parsedFiles = JSON.parse(savedFiles);
-      // Convert the saved file data back to File objects if needed
-      // For now, we'll just track that files were uploaded
+      // Removed syllabus copies for these subjects
+      delete parsedFiles['Operational Research'];
+      delete parsedFiles['Software Engineering'];
+      localStorage.setItem('syllabusFiles', JSON.stringify(parsedFiles));
       setUploadedFiles(parsedFiles);
     }
   }, []);
+
+  const handleRemoveSyllabus = (subjectName: string) => {
+    setUploadedFiles((prev) => {
+      const next = { ...prev };
+      delete next[subjectName];
+      localStorage.setItem('syllabusFiles', JSON.stringify(next));
+      return next;
+    });
+  };
   
   const subjects = [
     {
@@ -137,13 +148,16 @@ const Syllabus = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex justify-center">
+                  <div className="flex justify-center gap-3">
                     <Button
                       onClick={() => handleViewSyllabus(subject.name)}
                       className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 py-2 rounded-lg shadow-lg transform transition-all hover:scale-105"
                     >
                       <Eye className="w-4 h-4 mr-2" />
                       View Your Syllabus
+                    </Button>
+                    <Button variant="outline" onClick={() => handleRemoveSyllabus(subject.name)}>
+                      Remove
                     </Button>
                   </div>
                 )}
