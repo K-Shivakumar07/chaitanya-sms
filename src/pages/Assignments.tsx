@@ -1,91 +1,99 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, Clock, AlertTriangle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft, ClipboardList, CalendarDays } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
-import { assignments } from '@/data/documents';
+import SemesterGuard from '@/components/SemesterGuard';
+import { useAssignments } from '@/hooks/useSemesterData';
+
+const FILTERS = ['all', 'pending', 'in-progress', 'submitted'] as const;
+
+const statusColor = (status: string) => {
+  if (status === 'submitted') return 'bg-green-100 text-green-800';
+  if (status === 'in-progress') return 'bg-yellow-100 text-yellow-800';
+  return 'bg-orange-100 text-orange-800';
+};
+
+const priorityColor = (priority: string) => {
+  if (priority === 'high') return 'bg-red-100 text-red-800';
+  if (priority === 'medium') return 'bg-blue-100 text-blue-800';
+  return 'bg-gray-100 text-gray-800';
+};
 
 const Assignments = () => {
+  const [filter, setFilter] = useState<(typeof FILTERS)[number]>('all');
+  const { data, isLoading } = useAssignments();
 
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'in-progress': return 'bg-yellow-100 text-yellow-800';
-      case 'pending': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+  const assignments = (data ?? []).filter((a) => filter === 'all' || a.status === filter);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-      
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center space-x-4 mb-6">
-          <Link to="/">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Dashboard
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Assignments</h1>
-            <p className="text-gray-600">Track your pending and completed assignments</p>
+    <SemesterGuard>
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <div className="flex items-center space-x-4 mb-6">
+            <Link to="/dashboard">
+              <Button variant="ghost" size="sm">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Assignments</h1>
+              <p className="text-gray-600">Track pending and completed assignments</p>
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-4">
-          {assignments.map((assignment, index) => (
-            <Card key={index} className="hover:shadow-lg transition-all duration-300">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-xl">{assignment.title}</CardTitle>
-                    <p className="text-gray-600">{assignment.subject}</p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge className={getPriorityColor(assignment.priority)}>
-                      {assignment.priority} priority
-                    </Badge>
-                    <Badge className={getStatusColor(assignment.status)}>
-                      {assignment.status}
-                    </Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <p className="text-gray-700 mb-4">{assignment.description}</p>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Due: {assignment.dueDate}
-                  </div>
-                  <div className="space-x-2">
-                    <Button variant="outline" size="sm">View Details</Button>
-                    <Button size="sm">Submit</Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </main>
-    </div>
+          <div className="flex flex-wrap gap-2 mb-6">
+            {FILTERS.map((f) => (
+              <Button
+                key={f}
+                size="sm"
+                variant={filter === f ? 'default' : 'outline'}
+                onClick={() => setFilter(f)}
+                className="capitalize"
+              >
+                {f.replace('-', ' ')}
+              </Button>
+            ))}
+          </div>
+
+          {isLoading ? (
+            <p className="text-gray-500">Loading assignments…</p>
+          ) : assignments.length === 0 ? (
+            <div className="text-center py-12">
+              <ClipboardList className="w-14 h-14 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No assignments in this view.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {assignments.map((a) => (
+                <Card key={a.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-semibold text-gray-900">{a.title}</p>
+                        <p className="text-sm text-gray-600">{a.subject_name} • {a.faculty}</p>
+                        <p className="text-sm text-gray-600 mt-2">{a.description}</p>
+                        <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                          <CalendarDays className="w-3 h-3" /> Assigned {a.assigned_date} • Due {a.due_date}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end gap-2 shrink-0">
+                        <Badge className={statusColor(a.status)}>{a.status}</Badge>
+                        <Badge className={priorityColor(a.priority)}>{a.priority}</Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </main>
+      </div>
+    </SemesterGuard>
   );
 };
 

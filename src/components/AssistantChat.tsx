@@ -3,9 +3,17 @@ import { Link } from 'react-router-dom';
 import { Send, FileText, Bot } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { searchDocuments, SearchResult } from '@/data/documents';
+import { buildDocumentIndex, searchDocuments, SearchResult } from '@/data/documents';
+import { useMaterials, useNotes, useAssignments } from '@/hooks/useSemesterData';
+import { useSemester, romanSemester } from '@/context/SemesterContext';
 
-const QUICK_ASKS = ['DBMS notes', 'Physics material', 'Pending assignments', 'Mathematics'];
+const QUICK_ASKS = [
+  "Today's classes",
+  'Monday classes',
+  'Pending assignments',
+  'Upcoming deadlines',
+  'Latest announcements',
+];
 
 interface ChatMessage {
   id: number;
@@ -21,9 +29,7 @@ let idSeq = 0;
 const nextId = () => ++idSeq;
 
 interface Props {
-  /** Called when a document link is followed (used to close the floating panel). */
   onNavigate?: () => void;
-  /** Optional initial question, e.g. from a shared /assistant?q=... link. */
   initialQuery?: string;
   className?: string;
 }
@@ -33,11 +39,16 @@ const AssistantChat = ({ onNavigate, initialQuery, className = '' }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
   const [typing, setTyping] = useState(false);
+  const { semester } = useSemester();
+  const { data: materials } = useMaterials();
+  const { data: notes } = useNotes();
+  const { data: assignments } = useAssignments();
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: nextId(),
       from: 'bot',
-      text: "Hi! I'm your Campus Assistant 🤖 Ask me for any note, study material or assignment.",
+      text: "Hi! I'm your Campus Assistant 🤖 Ask me about your classes, assignments, deadlines, announcements, syllabus, notes or materials.",
       time: now(),
     },
   ]);
@@ -50,42 +61,130 @@ const AssistantChat = ({ onNavigate, initialQuery, className = '' }: Props) => {
     inputRef.current?.focus();
   }, [typing]);
 
-  const ask = (raw: string) => {
+  const historyRef = useRef<{ role: 'user' | 'assistant'; content: string }[]>([]);
+
+  const ask = async (raw: string) => {
     const q = raw.trim();
-    if (!q) return;
+    if (!q || typing) return;
+
     setMessages((prev) => [...prev, { id: nextId(), from: 'user', text: q, time: now() }]);
     setQuery('');
     setTyping(true);
-    window.setTimeout(() => {
-      const docs = searchDocuments(q).slice(0, 5);
+
+    const docs = searchDocuments(buildDocumentIndex(materials, notes, assignments), q).slice(0, 4);
+    historyRef.current = [...historyRef.current, { role: 'user', content: q }];
+
+    const botId = nextId();
+    let answer = '';
+    let started = false;
+
+    const pushChunk = (chunk: string) => {
+      answer += chunk;
+      setMessages((prev) => {
+        if (!started) return prev;
+        return prev.map((m) => (m.id === botId ? { ...m, text: answer } : m));
+      });
+    };
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/campus-assistant`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ semester, messages: historyRef.current }),
+        },
+      );
+
+      if (res.status === 429) throw new Error('The assistant is busy right now. Please try again in a moment.');
+      if (res.status === 402) throw new Error('AI credits are exhausted. Please add credits to continue.');
+      if (!res.ok || !res.body) throw new Error('Sorry, I could not reach the assistant service.');
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? '';
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith('data:')) continue;
+          const payload = trimmed.slice(5).trim();
+          if (payload === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(payload);
+            const delta = parsed?.choices?.[0]?.delta?.content;
+            if (delta) {
+              if (!started) {
+                started = true;
+                setTyping(false);
+                setMessages((prev) => [
+                  ...prev,
+                  { id: botId, from: 'bot', text: '', docs: docs.length ? docs : undefined, time: now() },
+                ]);
+              }
+              pushChunk(delta);
+            }
+          } catch {
+            /* ignore partial json */
+          }
+        }
+      }
+
+      if (!started) {
+        setTyping(false);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: botId,
+            from: 'bot',
+            text: "I couldn't find an answer for that. Try asking about your timetable, assignments or syllabus.",
+            docs: docs.length ? docs : undefined,
+            time: now(),
+          },
+        ]);
+      } else {
+        historyRef.current = [...historyRef.current, { role: 'assistant', content: answer }];
+      }
+    } catch (err) {
       setTyping(false);
       setMessages((prev) => [
         ...prev,
         {
           id: nextId(),
           from: 'bot',
-          text: docs.length
-            ? `I found ${docs.length} document${docs.length > 1 ? 's' : ''} for “${q}”:`
-            : `I couldn't find anything for “${q}”. Try a subject name like Physics or DBMS.`,
+          text: err instanceof Error ? err.message : 'Something went wrong.',
           docs: docs.length ? docs : undefined,
           time: now(),
         },
       ]);
-    }, 650);
+    }
   };
 
   const askedRef = useRef(false);
   useEffect(() => {
-    if (initialQuery && !askedRef.current) {
+    if (initialQuery && !askedRef.current && semester) {
       askedRef.current = true;
       ask(initialQuery);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialQuery]);
+  }, [initialQuery, semester]);
 
   return (
     <div className={`flex flex-col min-h-0 ${className}`}>
       <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-3 py-4 space-y-3 bg-gray-50">
+        {semester && (
+          <p className="text-center text-[11px] text-gray-400">
+            Answering from your Semester {romanSemester(semester)} dashboard
+          </p>
+        )}
         {messages.map((m) => (
           <div key={m.id} className={`flex gap-2 ${m.from === 'user' ? 'justify-end' : 'justify-start'}`}>
             {m.from === 'bot' && (
@@ -95,13 +194,13 @@ const AssistantChat = ({ onNavigate, initialQuery, className = '' }: Props) => {
             )}
             <div className={`max-w-[78%] ${m.from === 'user' ? 'items-end' : ''}`}>
               <div
-                className={`px-3 py-2 text-sm shadow-sm ${
+                className={`px-3 py-2 text-sm shadow-sm whitespace-pre-wrap ${
                   m.from === 'user'
                     ? 'bg-blue-600 text-white rounded-2xl rounded-br-sm'
                     : 'bg-white text-gray-800 border rounded-2xl rounded-bl-sm'
                 }`}
               >
-                {m.text}
+                {m.text || '…'}
               </div>
 
               {m.docs && (
@@ -167,10 +266,10 @@ const AssistantChat = ({ onNavigate, initialQuery, className = '' }: Props) => {
           ref={inputRef}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Type a message…"
+          placeholder="Ask about classes, assignments, syllabus…"
           className="h-9 rounded-full"
         />
-        <Button type="submit" size="sm" className="h-9 w-9 p-0 rounded-full shrink-0" aria-label="Send">
+        <Button type="submit" size="sm" disabled={typing} className="h-9 w-9 p-0 rounded-full shrink-0" aria-label="Send">
           <Send className="w-4 h-4" />
         </Button>
       </form>
