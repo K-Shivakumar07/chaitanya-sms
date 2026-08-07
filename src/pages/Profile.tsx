@@ -24,13 +24,6 @@ const Profile = () => {
     gpa: '3.8'
   };
 
-  const subjects = [
-    { name: 'Mathematics', grade: 'A', credits: 4 },
-    { name: 'Physics', grade: 'A-', credits: 4 },
-    { name: 'Chemistry', grade: 'B+', credits: 3 },
-    { name: 'English', grade: 'A', credits: 3 },
-    { name: 'Computer Science', grade: 'A+', credits: 4 }
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
