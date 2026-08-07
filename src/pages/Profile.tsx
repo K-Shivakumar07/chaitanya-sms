@@ -36,7 +36,7 @@ const Profile = () => {
       
       <main className="container mx-auto px-4 py-8">
         <div className="flex items-center space-x-4 mb-6">
-          <Link to="/">
+          <Link to="/dashboard">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Dashboard
