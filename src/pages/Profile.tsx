@@ -113,14 +113,18 @@ const Profile = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {subjects.map((subject, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                  {subjectsLoading && <p className="text-sm text-gray-500">Loading subjects…</p>}
+                  {!subjectsLoading && subjects.length === 0 && (
+                    <p className="text-sm text-gray-500">No subjects found for this semester.</p>
+                  )}
+                  {subjects.map((subject) => (
+                    <div key={subject.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div>
                         <p className="font-medium">{subject.name}</p>
-                        <p className="text-sm text-gray-500">{subject.credits} credits</p>
+                        <p className="text-sm text-gray-500">{subject.faculty} • {subject.credits} credits</p>
                       </div>
                       <Badge variant="outline" className="font-medium">
-                        {subject.grade}
+                        {subject.code}
                       </Badge>
                     </div>
                   ))}
