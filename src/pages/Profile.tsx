@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
+import { useSubjects } from '@/hooks/useSemesterData';
 
 const Profile = () => {
+  const { data: subjects = [], isLoading: subjectsLoading } = useSubjects();
   const studentInfo = {
     name: 'John Doe',
     studentId: 'STU2024001',
@@ -22,13 +24,6 @@ const Profile = () => {
     gpa: '3.8'
   };
 
-  const subjects = [
-    { name: 'Mathematics', grade: 'A', credits: 4 },
-    { name: 'Physics', grade: 'A-', credits: 4 },
-    { name: 'Chemistry', grade: 'B+', credits: 3 },
-    { name: 'English', grade: 'A', credits: 3 },
-    { name: 'Computer Science', grade: 'A+', credits: 4 }
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -118,14 +113,18 @@ const Profile = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {subjects.map((subject, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                  {subjectsLoading && <p className="text-sm text-gray-500">Loading subjects…</p>}
+                  {!subjectsLoading && subjects.length === 0 && (
+                    <p className="text-sm text-gray-500">No subjects found for this semester.</p>
+                  )}
+                  {subjects.map((subject) => (
+                    <div key={subject.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div>
                         <p className="font-medium">{subject.name}</p>
-                        <p className="text-sm text-gray-500">{subject.credits} credits</p>
+                        <p className="text-sm text-gray-500">{subject.faculty} • {subject.credits} credits</p>
                       </div>
                       <Badge variant="outline" className="font-medium">
-                        {subject.grade}
+                        {subject.code}
                       </Badge>
                     </div>
                   ))}
