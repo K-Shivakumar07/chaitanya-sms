@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
+import { useSubjects } from '@/hooks/useSemesterData';
 
 const Profile = () => {
+  const { data: subjects = [], isLoading: subjectsLoading } = useSubjects();
   const studentInfo = {
     name: 'John Doe',
     studentId: 'STU2024001',
