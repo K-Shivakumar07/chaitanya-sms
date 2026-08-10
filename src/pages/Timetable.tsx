@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
 import SemesterGuard from '@/components/SemesterGuard';
 import { useTimetable } from '@/hooks/useSemesterData';
+import { formatRange12 } from '@/utils/time';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -63,7 +64,7 @@ const Timetable = () => {
                       <p className="text-sm text-gray-600">{s.faculty} • Room {s.room}</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-sm font-medium text-gray-900">{s.start_time} - {s.end_time}</p>
+                      <p className="text-sm font-medium text-gray-900">{formatRange12(s.start_time, s.end_time)}</p>
                       {s.is_lab && <Badge className="mt-1 bg-purple-100 text-purple-800">Lab</Badge>}
                     </div>
                   </div>

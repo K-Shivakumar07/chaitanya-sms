@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Clock, CheckCircle, AlertCircle, Book } from 'lucide-react';
 import { useTimetable, useAssignments, useMaterials, useNotes } from '@/hooks/useSemesterData';
+import { formatTime12 } from '@/utils/time';
 
 const QuickStats = () => {
   const { data: slots } = useTimetable();
@@ -25,7 +26,7 @@ const QuickStats = () => {
     {
       title: "Today's Classes",
       value: String(todaySlots.length),
-      description: next ? `Next: ${next.subject_name} at ${next.start_time}` : 'No more classes today',
+      description: next ? `Next: ${next.subject_name} at ${formatTime12(next.start_time)}` : 'No more classes today',
       icon: Clock,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
