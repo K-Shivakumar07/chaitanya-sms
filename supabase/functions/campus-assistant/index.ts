@@ -53,6 +53,20 @@ Deno.serve(async (req) => {
       .eq("semester", semester);
     (subjectRows ?? []).forEach((s: { id: string; name: string }) => subjectById.set(s.id, s.name));
 
+    const to12 = (t: string) => {
+      const [hStr, mStr] = String(t ?? "").split(":");
+      const h = Number(hStr);
+      if (Number.isNaN(h)) return t;
+      const period = h >= 12 ? "PM" : "AM";
+      const hour12 = h % 12 === 0 ? 12 : h % 12;
+      return `${hour12}:${String(Number(mStr ?? 0)).padStart(2, "0")} ${period}`;
+    };
+    const timetableRows = (timetable.data ?? []).map((s: Record<string, unknown>) => ({
+      ...s,
+      start_time: to12(String(s.start_time)),
+      end_time: to12(String(s.end_time)),
+    }));
+
     const syllabusWithNames = (syllabus.data ?? []).map((u: Record<string, unknown>) => ({
       subject: subjectById.get(String(u.subject_id)) ?? "Unknown",
       unit: u.unit_no,
@@ -68,14 +82,14 @@ Deno.serve(async (req) => {
     const assignmentRows = assignments.data ?? [];
     const pending = assignmentRows.filter((a: Record<string, string>) => a.status !== "submitted");
     const completed = assignmentRows.filter((a: Record<string, string>) => a.status === "submitted");
-    const todaysClasses = (timetable.data ?? []).filter((s: Record<string, string>) => s.day === todayName);
+    const todaysClasses = timetableRows.filter((s: Record<string, string>) => s.day === todayName);
 
     const system = `You are the Campus Assistant for a B.Tech student management dashboard.
 You answer ONLY from the semester ${semester} dashboard data given below. Today is ${today} (${todayName}).
 
 Rules:
 - Answer briefly and clearly using markdown-free plain text with simple bullet lines ("• ").
-- For timetable questions (e.g. "what are Monday classes?"), list time, subject, faculty and room in order.
+- For timetable questions (e.g. "what are Monday classes?"), list time, subject, faculty and room in order. Always state times in 12-hour format with AM/PM exactly as given.
 - For assignments give title, subject, due date and status. For deadlines mention urgency.
 - For syllabus questions list the units and their topics for that subject.
 - If something is not in the data, say it is not available for this semester. Never invent data.
@@ -84,7 +98,7 @@ Rules:
 TODAY (${todayName}) CLASSES: ${fmt(todaysClasses)}
 STATS: today's classes = ${todaysClasses.length}, pending assignments = ${pending.length}, completed assignments = ${completed.length}, study materials = ${(materials.data ?? []).length}, notes = ${(notes.data ?? []).length}
 SUBJECTS: ${fmt(subjects.data ?? [])}
-FULL TIMETABLE: ${fmt(timetable.data ?? [])}
+FULL TIMETABLE: ${fmt(timetableRows)}
 SYLLABUS UNITS: ${fmt(syllabusWithNames)}
 STUDY MATERIALS: ${fmt(materials.data ?? [])}
 NOTES: ${fmt(notes.data ?? [])}
