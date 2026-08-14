@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { X, Maximize2 } from 'lucide-react';
 import AssistantChat from '@/components/AssistantChat';
-import robotVideo from '@/assets/assistant-robot.mp4.asset.json';
+
+/** Served from /public so it works in dev, local builds and production. */
+const ROBOT_VIDEO = '/assistant-robot.mp4';
 
 /** Time windows (seconds) in the loop where the robot raises its hands. */
 const GESTURE_WINDOWS: { start: number; end: number; message: string }[] = [
