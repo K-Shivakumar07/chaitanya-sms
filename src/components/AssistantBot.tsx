@@ -61,7 +61,7 @@ const AssistantBot = () => {
         <div className="w-[21rem] sm:w-96 h-[30rem] flex flex-col rounded-2xl border bg-white shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4">
           <div className="flex items-center gap-3 px-4 py-3 bg-blue-600 text-white">
             <div className="relative h-9 w-9 rounded-full overflow-hidden border-2 border-white/70 shrink-0">
-              <video src={robotVideo.url} autoPlay loop muted playsInline className="h-full w-full object-cover scale-125" />
+              <video src={ROBOT_VIDEO} autoPlay loop muted playsInline className="h-full w-full object-cover scale-125" />
             </div>
             <div className="flex-1 leading-tight">
               <p className="text-sm font-semibold">Campus Assistant</p>
@@ -102,7 +102,7 @@ const AssistantBot = () => {
         >
           <video
             ref={videoRef}
-            src={robotVideo.url}
+            src={ROBOT_VIDEO}
             autoPlay
             loop
             muted
