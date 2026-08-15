@@ -169,6 +169,42 @@ export type Database = {
         }
         Relationships: []
       }
+      faculty: {
+        Row: {
+          created_at: string
+          department: string
+          designation: string
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          department?: string
+          designation?: string
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          role?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          department?: string
+          designation?: string
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       materials: {
         Row: {
           created_at: string
