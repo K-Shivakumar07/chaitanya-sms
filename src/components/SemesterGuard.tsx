@@ -4,7 +4,7 @@ import { useSemester } from '@/context/SemesterContext';
 
 const SemesterGuard = ({ children }: { children: React.ReactNode }) => {
   const { semester } = useSemester();
-  if (!semester) return <Navigate to="/" replace />;
+  if (!semester) return <Navigate to="/student" replace />;
   return <>{children}</>;
 };
 
