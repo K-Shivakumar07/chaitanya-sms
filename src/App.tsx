@@ -4,7 +4,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SemesterProvider } from "@/context/SemesterContext";
+import { RoleProvider } from "@/context/RoleContext";
 import Index from "./pages/Index";
+import SelectSemester from "./pages/SelectSemester";
+import Faculty from "./pages/Faculty";
+import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
 import Syllabus from "./pages/Syllabus";
 import Timetable from "./pages/Timetable";
@@ -21,6 +25,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <RoleProvider>
     <SemesterProvider>
       <TooltipProvider>
         <Toaster />
@@ -28,6 +33,9 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/student" element={<SelectSemester />} />
+            <Route path="/faculty" element={<Faculty />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/syllabus" element={<Syllabus />} />
             <Route path="/timetable" element={<Timetable />} />
@@ -43,6 +51,7 @@ const App = () => (
         </BrowserRouter>
       </TooltipProvider>
     </SemesterProvider>
+    </RoleProvider>
   </QueryClientProvider>
 );
 
