@@ -53,8 +53,8 @@ const AssistantBot = () => {
   };
 
   // The dedicated /assistant route renders the full-page chat instead.
-  // Hidden on the dedicated /assistant route and on the semester-selection homepage.
-  if (location.pathname === '/assistant' || location.pathname === '/') return null;
+  // Hidden on the dedicated /assistant route, the module picker homepage, and the semester-selection page.
+  if (location.pathname === '/assistant' || location.pathname === '/' || location.pathname === '/student') return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
