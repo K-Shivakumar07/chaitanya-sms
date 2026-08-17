@@ -75,6 +75,7 @@ const CrudPanel = ({
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload: Record<string, unknown> = { ...extraValues };
+    const allSemesters = scoped && semester === 0;
     if (scoped && semester) payload.semester = semester;
     for (const f of fields) {
       const raw = form[f.name];
@@ -94,8 +95,15 @@ const CrudPanel = ({
     }
 
     try {
-      await insert.mutateAsync(payload);
-      toast({ title: `${title} entry added` });
+      if (allSemesters) {
+        await insert.mutateAsync(
+          Array.from({ length: 8 }, (_, i) => ({ ...payload, semester: i + 1 })) as any,
+        );
+        toast({ title: `${title} published to all 8 semesters` });
+      } else {
+        await insert.mutateAsync(payload);
+        toast({ title: `${title} entry added` });
+      }
       setForm(initial);
       setOpen(false);
     } catch (err: any) {
@@ -191,7 +199,12 @@ const CrudPanel = ({
               <li key={row.id} className="flex items-start justify-between gap-4 p-3">
                 <div className="min-w-0">
                   <p className="text-sm font-medium truncate">{primary(row)}</p>
-                  {secondary && <p className="text-xs text-muted-foreground truncate">{secondary(row)}</p>}
+                  {secondary && (
+                    <p className="text-xs text-muted-foreground truncate">
+                      {scoped && semester === 0 && row.semester ? `Sem ${row.semester} • ` : ''}
+                      {secondary(row)}
+                    </p>
+                  )}
                 </div>
                 <Button variant="ghost" size="icon" onClick={() => del(row.id)} aria-label="Delete">
                   <Trash2 className="w-4 h-4 text-destructive" />
