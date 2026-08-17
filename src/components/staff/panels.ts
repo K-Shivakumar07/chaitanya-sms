@@ -1,6 +1,6 @@
 import type { FieldDef } from './CrudPanel';
 
-interface PanelConfig {
+export interface PanelConfig {
   title: string;
   description?: string;
   table: string;
@@ -12,6 +12,14 @@ interface PanelConfig {
   primary: (row: any) => string;
   secondary?: (row: any) => string;
 }
+
+export interface PanelEntry {
+  value: string;
+  label: string;
+  panel: (semester: number) => PanelConfig;
+  allowAllSemesters?: boolean;
+}
+
 
 const fileTypes = [
   { value: 'PDF', label: 'PDF' },
