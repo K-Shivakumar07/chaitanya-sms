@@ -22,9 +22,10 @@ export const useTableRows = <T = Record<string, unknown>>(
   options: { semester?: number | null; orderBy?: string; ascending?: boolean; scoped?: boolean } = {},
 ) => {
   const { semester = null, orderBy = 'created_at', ascending = false, scoped = true } = options;
+  // semester === 0 means "All semesters" (no filter)
   return useQuery({
-    queryKey: [table, scoped ? semester ?? 0 : 'all'],
-    enabled: !scoped || !!semester,
+    queryKey: [table, scoped ? semester ?? 'none' : 'all'],
+    enabled: !scoped || semester !== null,
     queryFn: async () => {
       let query = db.from(table).select('*');
       if (scoped && semester) query = query.eq('semester', semester);
