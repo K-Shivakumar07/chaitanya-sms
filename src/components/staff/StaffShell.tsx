@@ -16,10 +16,18 @@ interface StaffShellProps {
   subtitle: string;
   semester: number;
   onSemesterChange: (n: number) => void;
+  allowAllSemesters?: boolean;
   children: React.ReactNode;
 }
 
-const StaffShell = ({ title, subtitle, semester, onSemesterChange, children }: StaffShellProps) => (
+const StaffShell = ({
+  title,
+  subtitle,
+  semester,
+  onSemesterChange,
+  allowAllSemesters = false,
+  children,
+}: StaffShellProps) => (
   <div className="min-h-screen bg-gray-50">
     <header className="bg-white shadow-sm border-b">
       <div className="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
@@ -40,7 +48,7 @@ const StaffShell = ({ title, subtitle, semester, onSemesterChange, children }: S
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-popover z-50">
-              <SelectItem value="0">All semesters</SelectItem>
+              {allowAllSemesters && <SelectItem value="0">All semesters</SelectItem>}
               {Array.from({ length: 8 }, (_, i) => i + 1).map((n) => (
                 <SelectItem key={n} value={String(n)}>
                   Semester {romanSemester(n)}

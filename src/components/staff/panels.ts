@@ -1,6 +1,6 @@
 import type { FieldDef } from './CrudPanel';
 
-interface PanelConfig {
+export interface PanelConfig {
   title: string;
   description?: string;
   table: string;
@@ -12,6 +12,14 @@ interface PanelConfig {
   primary: (row: any) => string;
   secondary?: (row: any) => string;
 }
+
+export interface PanelEntry {
+  value: string;
+  label: string;
+  panel: (semester: number) => PanelConfig;
+  allowAllSemesters?: boolean;
+}
+
 
 const fileTypes = [
   { value: 'PDF', label: 'PDF' },
@@ -286,19 +294,19 @@ export const facultyDirectoryPanel = (): PanelConfig => ({
   secondary: (r) => `${r.designation} • ${r.department}${r.email ? ` • ${r.email}` : ''}`,
 });
 
-export const facultyPanels = [
+export const facultyPanels: PanelEntry[] = [
   { value: 'materials', label: 'Study Materials', panel: materialsPanel },
   { value: 'notes', label: 'Notes & PDFs', panel: notesPanel },
   { value: 'assignments', label: 'Assignments', panel: assignmentsPanel },
   { value: 'deadlines', label: 'Deadlines', panel: deadlinesPanel },
-  { value: 'announcements', label: 'Announcements', panel: announcementsPanel },
-  { value: 'activities', label: 'Recent Activity', panel: activitiesPanel },
+  { value: 'announcements', label: 'Announcements', panel: announcementsPanel, allowAllSemesters: true },
+  { value: 'activities', label: 'Recent Activity', panel: activitiesPanel, allowAllSemesters: true },
 ];
 
-export const adminPanels = [
+export const adminPanels: PanelEntry[] = [
   { value: 'subjects', label: 'Subjects', panel: subjectsPanel },
   { value: 'syllabus', label: 'Syllabus', panel: syllabusPanel },
   { value: 'timetable', label: 'Timetable', panel: timetablePanel },
-  { value: 'faculty', label: 'Faculty & Staff', panel: () => facultyDirectoryPanel() },
+  { value: 'faculty', label: 'Faculty & Staff', panel: (semester: number) => facultyDirectoryPanel() },
   ...facultyPanels,
 ];
