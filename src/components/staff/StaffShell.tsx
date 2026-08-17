@@ -40,6 +40,7 @@ const StaffShell = ({ title, subtitle, semester, onSemesterChange, children }: S
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-popover z-50">
+              <SelectItem value="0">All semesters</SelectItem>
               {Array.from({ length: 8 }, (_, i) => i + 1).map((n) => (
                 <SelectItem key={n} value={String(n)}>
                   Semester {romanSemester(n)}

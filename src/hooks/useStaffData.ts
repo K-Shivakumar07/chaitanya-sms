@@ -39,7 +39,7 @@ export const useTableRows = <T = Record<string, unknown>>(
 export const useInsertRow = (table: string) => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (values: Record<string, unknown>) => {
+    mutationFn: async (values: Record<string, unknown> | Record<string, unknown>[]) => {
       const { error } = await db.from(table).insert(values);
       if (error) throw error;
     },
