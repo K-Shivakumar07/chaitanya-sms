@@ -92,8 +92,8 @@ const Dashboard = () => {
           {!searchQuery && <QuickStats />}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {filteredFeatures.map((feature, index) => (
-              <Link key={index} to={feature.link} className="group">
+            {filteredFeatures.map((feature, index) => {
+              const card = (
                 <Card className="h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-l-4 border-l-transparent hover:border-l-blue-500">
                   <CardHeader className="pb-3">
                     <div className="flex items-center space-x-3">
@@ -109,8 +109,18 @@ const Dashboard = () => {
                     <CardDescription className="text-sm">{feature.description}</CardDescription>
                   </CardContent>
                 </Card>
-              </Link>
-            ))}
+              );
+
+              return feature.external ? (
+                <a key={index} href={feature.link} target="_blank" rel="noopener noreferrer" className="group">
+                  {card}
+                </a>
+              ) : (
+                <Link key={index} to={feature.link} className="group">
+                  {card}
+                </Link>
+              );
+            })}
           </div>
 
           {!searchQuery && <RecentActivity />}
