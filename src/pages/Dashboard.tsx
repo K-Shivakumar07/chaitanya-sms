@@ -111,15 +111,12 @@ const Dashboard = () => {
                 </Card>
               );
 
-              return feature.external ? (
-                <a key={index} href={feature.link} target="_blank" rel="noopener noreferrer" className="group">
-                  {card}
-                </a>
-              ) : (
+              return (
                 <Link key={index} to={feature.link} className="group">
                   {card}
                 </Link>
               );
+
             })}
           </div>
 
