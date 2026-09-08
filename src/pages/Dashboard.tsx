@@ -19,7 +19,7 @@ const features = [
   { title: 'Notes & PDFs', description: 'Download subject notes', icon: FileText, link: '/notes', color: 'bg-orange-500' },
   { title: 'Assignments', description: 'Pending and completed assignments', icon: Download, link: '/assignments', color: 'bg-red-500' },
   { title: 'Announcements', description: 'Notices from the department', icon: Bell, link: '/announcements', color: 'bg-yellow-500' },
-  { title: 'Attendance', description: 'View your attendance record', icon: UserCheck, link: 'http://www.chaitanya.net.in/cgcstudent/hyd/index.php', color: 'bg-teal-500', external: true },
+  { title: 'Attendance', description: 'View your attendance record', icon: UserCheck, link: '/attendance', color: 'bg-teal-500' },
 ];
 
 const Dashboard = () => {

@@ -18,6 +18,7 @@ import Assignments from "./pages/Assignments";
 import Announcements from "./pages/Announcements";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import Attendance from "./pages/Attendance";
 import Assistant from "./pages/Assistant";
 import AssistantBot from "./components/AssistantBot";
 
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/notes" element={<Notes />} />
             <Route path="/assignments" element={<Assignments />} />
             <Route path="/announcements" element={<Announcements />} />
+            <Route path="/attendance" element={<Attendance />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/assistant" element={<Assistant />} />
             <Route path="*" element={<NotFound />} />
