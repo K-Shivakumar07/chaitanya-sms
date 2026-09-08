@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Book, Calendar, FileText, Download, Bell, BookOpen } from 'lucide-react';
+import { Book, Calendar, FileText, Download, Bell, BookOpen, UserCheck } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
@@ -19,6 +19,7 @@ const features = [
   { title: 'Notes & PDFs', description: 'Download subject notes', icon: FileText, link: '/notes', color: 'bg-orange-500' },
   { title: 'Assignments', description: 'Pending and completed assignments', icon: Download, link: '/assignments', color: 'bg-red-500' },
   { title: 'Announcements', description: 'Notices from the department', icon: Bell, link: '/announcements', color: 'bg-yellow-500' },
+  { title: 'Attendance', description: 'View your attendance record', icon: UserCheck, link: 'http://www.chaitanya.net.in/cgcstudent/hyd/index.php', color: 'bg-teal-500', external: true },
 ];
 
 const Dashboard = () => {
@@ -91,8 +92,8 @@ const Dashboard = () => {
           {!searchQuery && <QuickStats />}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {filteredFeatures.map((feature, index) => (
-              <Link key={index} to={feature.link} className="group">
+            {filteredFeatures.map((feature, index) => {
+              const card = (
                 <Card className="h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-l-4 border-l-transparent hover:border-l-blue-500">
                   <CardHeader className="pb-3">
                     <div className="flex items-center space-x-3">
@@ -108,8 +109,18 @@ const Dashboard = () => {
                     <CardDescription className="text-sm">{feature.description}</CardDescription>
                   </CardContent>
                 </Card>
-              </Link>
-            ))}
+              );
+
+              return feature.external ? (
+                <a key={index} href={feature.link} target="_blank" rel="noopener noreferrer" className="group">
+                  {card}
+                </a>
+              ) : (
+                <Link key={index} to={feature.link} className="group">
+                  {card}
+                </Link>
+              );
+            })}
           </div>
 
           {!searchQuery && <RecentActivity />}
