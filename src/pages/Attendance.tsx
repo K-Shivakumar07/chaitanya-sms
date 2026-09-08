@@ -30,6 +30,17 @@ const Attendance = () => {
               <h1 className="text-3xl font-bold text-gray-900">Attendance</h1>
               <p className="text-gray-600">Attendance marks entered by your faculty</p>
             </div>
+            <a
+              href="http://www.chaitanya.net.in/cgcstudent/hyd/index.php"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-auto"
+            >
+              <Button variant="outline" size="sm">
+                <ExternalLink className="w-4 h-4 mr-2" />
+                External Link
+              </Button>
+            </a>
           </div>
 
           {isLoading ? (
