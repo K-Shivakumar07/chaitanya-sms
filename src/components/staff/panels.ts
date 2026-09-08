@@ -294,6 +294,29 @@ export const facultyDirectoryPanel = (): PanelConfig => ({
   secondary: (r) => `${r.designation} • ${r.department}${r.email ? ` • ${r.email}` : ''}`,
 });
 
+export const attendancePanel = (semester: number): PanelConfig => ({
+  title: 'Attendance',
+  description: 'Enter attendance marks for students of this semester',
+  table: 'attendance_records',
+  semester,
+  orderBy: 'roll_no',
+  ascending: true,
+  fields: [
+    { name: 'roll_no', label: 'Roll number', required: true },
+    { name: 'student_name', label: 'Student name', required: true },
+    { name: 'subject_name', label: 'Subject', required: true },
+    { name: 'period', label: 'Period', placeholder: 'Sep 2026', required: true },
+    { name: 'classes_held', label: 'Classes held', type: 'number', required: true },
+    { name: 'classes_attended', label: 'Classes attended', type: 'number', required: true },
+    { name: 'remarks', label: 'Remarks', type: 'textarea' },
+  ],
+  primary: (r) => `${r.roll_no} • ${r.student_name}`,
+  secondary: (r) =>
+    `${r.subject_name} • ${r.period} • ${r.classes_attended}/${r.classes_held} (${
+      r.classes_held ? Math.round((r.classes_attended / r.classes_held) * 100) : 0
+    }%)`,
+});
+
 export const facultyPanels: PanelEntry[] = [
   { value: 'materials', label: 'Study Materials', panel: materialsPanel },
   { value: 'notes', label: 'Notes & PDFs', panel: notesPanel },
@@ -301,6 +324,7 @@ export const facultyPanels: PanelEntry[] = [
   { value: 'deadlines', label: 'Deadlines', panel: deadlinesPanel },
   { value: 'announcements', label: 'Announcements', panel: announcementsPanel, allowAllSemesters: true },
   { value: 'activities', label: 'Recent Activity', panel: activitiesPanel, allowAllSemesters: true },
+  { value: 'attendance', label: 'Attendance', panel: attendancePanel },
 ];
 
 export const adminPanels: PanelEntry[] = [

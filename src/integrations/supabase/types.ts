@@ -133,6 +133,48 @@ export type Database = {
           },
         ]
       }
+      attendance_records: {
+        Row: {
+          classes_attended: number
+          classes_held: number
+          created_at: string
+          id: string
+          period: string
+          remarks: string | null
+          roll_no: string
+          semester: number
+          student_name: string
+          subject_name: string
+          updated_at: string
+        }
+        Insert: {
+          classes_attended?: number
+          classes_held?: number
+          created_at?: string
+          id?: string
+          period?: string
+          remarks?: string | null
+          roll_no: string
+          semester: number
+          student_name: string
+          subject_name: string
+          updated_at?: string
+        }
+        Update: {
+          classes_attended?: number
+          classes_held?: number
+          created_at?: string
+          id?: string
+          period?: string
+          remarks?: string | null
+          roll_no?: string
+          semester?: number
+          student_name?: string
+          subject_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       deadlines: {
         Row: {
           category: string
