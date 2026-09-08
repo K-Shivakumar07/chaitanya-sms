@@ -276,3 +276,32 @@ export const useActivities = () => {
     },
   });
 };
+
+export interface AttendanceRow {
+  id: string;
+  semester: number;
+  student_name: string;
+  roll_no: string;
+  subject_name: string;
+  period: string;
+  classes_held: number;
+  classes_attended: number;
+  remarks: string | null;
+}
+
+export const useAttendance = () => {
+  const { semester } = useSemester();
+  return useQuery({
+    queryKey: ['attendance_records', enabledKey(semester)],
+    enabled: !!semester,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('attendance_records')
+        .select('*')
+        .eq('semester', semester!)
+        .order('roll_no');
+      if (error) throw error;
+      return (data ?? []) as AttendanceRow[];
+    },
+  });
+};
