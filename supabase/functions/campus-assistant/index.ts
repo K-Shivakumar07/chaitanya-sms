@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const [subjects, syllabus, timetable, materials, notes, assignments, announcements, deadlines, activities] =
+    const [subjects, syllabus, timetable, materials, notes, assignments, announcements, deadlines, activities, attendance, faculty] =
       await Promise.all([
         supabase.from("subjects").select("code,name,short_name,faculty,credits,kind").eq("semester", semester),
         supabase.from("syllabus_units").select("unit_no,title,topics,hours,subject_id").eq("semester", semester).order("unit_no"),
@@ -40,10 +40,13 @@ Deno.serve(async (req) => {
         supabase.from("materials").select("title,subject_name,unit_no,file_type,size_label,uploaded_at,downloads,description").eq("semester", semester),
         supabase.from("notes").select("title,subject_name,unit_no,faculty,file_type,pages,size_label,uploaded_at").eq("semester", semester),
         supabase.from("assignments").select("title,subject_name,faculty,description,assigned_date,due_date,status,priority").eq("semester", semester).order("due_date"),
-        supabase.from("announcements").select("title,body,category,posted_by,posted_at").or(`semester.eq.${semester},semester.is.null`).order("posted_at", { ascending: false }).limit(20),
+        supabase.from("announcements").select("title,body,category,posted_by,posted_at,semester").or(`semester.eq.${semester},semester.eq.0,semester.is.null`).order("posted_at", { ascending: false }).limit(30),
         supabase.from("deadlines").select("title,detail,category,due_date,urgent").eq("semester", semester).order("due_date"),
-        supabase.from("activities").select("kind,title,detail,occurred_at").eq("semester", semester).order("occurred_at", { ascending: false }).limit(15),
+        supabase.from("activities").select("kind,title,detail,occurred_at,semester").or(`semester.eq.${semester},semester.eq.0`).order("occurred_at", { ascending: false }).limit(25),
+        supabase.from("attendance_records").select("student_name,roll_no,subject_name,period,classes_held,classes_attended,remarks,updated_at").eq("semester", semester).order("updated_at", { ascending: false }).limit(300),
+        supabase.from("faculty").select("name,email,phone,department,designation,role"),
       ]);
+
 
     const subjectById = new Map<string, string>();
     // map syllabus subject ids to names using a second lookup
