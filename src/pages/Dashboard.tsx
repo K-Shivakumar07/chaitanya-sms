@@ -23,7 +23,7 @@ const features = [
 ];
 
 const Dashboard = () => {
-  const { semester } = useSemester();
+  const { semester, branch } = useSemester();
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('search');
 
@@ -50,7 +50,7 @@ const Dashboard = () => {
         <main className="container mx-auto px-4 py-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {searchQuery ? `Search results for "${searchQuery}"` : `Semester ${romanSemester(semester ?? 1)} Dashboard`}
+              {searchQuery ? `Search results for "${searchQuery}"` : `${branch ? `${branch} · ` : ''}Semester ${romanSemester(semester ?? 1)} Dashboard`}
             </h1>
             <p className="text-gray-600">
               {searchQuery
