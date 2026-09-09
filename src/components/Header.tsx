@@ -58,7 +58,7 @@ const Header = () => {
   const [sectionResults, setSectionResults] = useState<typeof sectionSuggestions>([]);
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { semester } = useSemester();
+  const { semester, branch } = useSemester();
 
   const { data: materials } = useMaterials();
   const { data: notes } = useNotes();
@@ -292,10 +292,10 @@ const Header = () => {
 
           <div className="flex items-center space-x-2 md:space-x-4">
             {semester && (
-              <Link to="/">
+              <Link to="/student">
                 <Button variant="outline" size="sm" className="hidden sm:inline-flex">
                   <GraduationCap className="w-4 h-4 mr-2" />
-                  Sem {romanSemester(semester)} · Change
+                  {branch ? `${branch} · ` : ''}Sem {romanSemester(semester)} · Change
                 </Button>
               </Link>
             )}
