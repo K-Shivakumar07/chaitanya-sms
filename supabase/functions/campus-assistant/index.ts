@@ -110,8 +110,10 @@ STUDY MATERIALS: ${fmt(materials.data ?? [])}
 NOTES: ${fmt(notes.data ?? [])}
 ASSIGNMENTS: ${fmt(assignmentRows)}
 UPCOMING DEADLINES: ${fmt(deadlines.data ?? [])}
-ANNOUNCEMENTS: ${fmt(announcements.data ?? [])}
-RECENT ACTIVITY: ${fmt(activities.data ?? [])}
+ANNOUNCEMENTS (includes All-semesters staff posts): ${fmt(announcements.data ?? [])}
+RECENT ACTIVITY (includes All-semesters staff posts): ${fmt(activities.data ?? [])}
+ATTENDANCE RECORDS: ${fmt(attendance.data ?? [])}
+FACULTY DIRECTORY: ${fmt(faculty.data ?? [])}
 === END SNAPSHOT ===`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
