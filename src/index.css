@@ -2,6 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope-400.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope-600.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope-700.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Sora";
+  src: url("/fonts/sora-600.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Sora";
+  src: url("/fonts/sora-800.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */
@@ -53,6 +93,18 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --portal-canvas: 214 45% 96%;
+    --portal-ink: 211 64% 8%;
+    --portal-blue: 215 100% 52%;
+    --portal-blue-strong: 221 94% 42%;
+    --portal-cyan: 175 76% 46%;
+    --portal-glass: 0 0% 100%;
+    --portal-glass-muted: 210 40% 98%;
+    --portal-line: 213 35% 88%;
+    --portal-soft-blue: 213 100% 95%;
+    --portal-soft-cyan: 174 64% 91%;
+    --portal-shadow: 213 46% 26%;
   }
 
   .dark {
@@ -101,5 +153,36 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  button,
+  a {
+    letter-spacing: 0;
+  }
+}
+
+@layer utilities {
+  .portal-grid {
+    background-image:
+      linear-gradient(hsl(var(--portal-line) / 0.35) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--portal-line) / 0.35) 1px, transparent 1px);
+    background-size: 38px 38px;
+    mask-image: linear-gradient(to bottom, hsl(0 0% 0% / 0.8), transparent 82%);
+  }
+
+  .portal-glass-highlight {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--portal-glass) / 0.98),
+      hsl(var(--portal-glass) / 0.72)
+    );
+  }
+
+  .portal-active-surface {
+    background: linear-gradient(
+      145deg,
+      hsl(var(--portal-blue)),
+      hsl(var(--portal-blue-strong))
+    );
   }
 }

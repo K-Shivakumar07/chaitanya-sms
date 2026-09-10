@@ -5,7 +5,6 @@ import {
   ArrowRight,
   ArrowLeft,
   BookOpen,
-  Award,
   BarChart3,
   Laptop,
   Bot,
@@ -13,10 +12,11 @@ import {
   Plug,
   Cog,
   Building2,
+  Check,
+  Orbit,
+  CalendarDays,
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { useSemester, romanSemester } from '@/context/SemesterContext';
 import { useSemesters, useSubjects } from '@/hooks/useSemesterData';
 
@@ -53,119 +53,139 @@ const SelectSemester = () => {
   const selectedBranch = BRANCHES.find((b) => b.code === branch);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-gray-100">
-      <main className="container mx-auto px-4 py-12 max-w-6xl">
-        <div className="text-center mb-10">
-          <Badge variant="secondary" className="mb-4 px-4 py-1.5 text-sm">
-            <GraduationCap className="w-4 h-4 mr-1.5" /> B.Tech Student Academic Portal
-          </Badge>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
-            Select Your B.Tech Branch &amp; Semester
-          </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Choose your active academic branch and select from Semester 1 through Semester 8 to
-            customize your student management dashboard.
-          </p>
-          <Button variant="ghost" className="mt-4" asChild>
-            <Link to="/">
-              <ArrowLeft className="w-4 h-4 mr-1" /> Switch module
-            </Link>
-          </Button>
-        </div>
+    <div className="relative min-h-screen overflow-hidden bg-portal-canvas font-portal text-portal-ink">
+      <div className="portal-grid pointer-events-none absolute inset-0" aria-hidden="true" />
+      <div className="pointer-events-none absolute left-[4%] top-28 hidden h-28 w-28 animate-portal-drift rounded-[1.75rem] border border-portal-glass/70 bg-portal-soft-cyan/70 shadow-portal-card backdrop-blur-xl motion-reduce:animate-none lg:block" aria-hidden="true">
+        <Orbit className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 text-portal-cyan" />
+      </div>
+      <div className="pointer-events-none absolute right-[3%] top-48 hidden h-32 w-32 animate-portal-float rounded-[1.75rem] border border-portal-glass/80 bg-portal-soft-blue/75 shadow-portal-card backdrop-blur-xl motion-reduce:animate-none xl:flex xl:items-center xl:justify-center" aria-hidden="true">
+        <GraduationCap className="h-14 w-14 text-portal-blue" />
+      </div>
 
-        <Card className="mb-8">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-5">
-              <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-indigo-600 text-white font-bold text-sm">
-                1
-              </span>
-              <h2 className="text-xl font-bold text-gray-900">Select B.Tech Specialization / Branch</h2>
+      <main className="relative mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-10">
+        <div className="portal-glass-highlight overflow-hidden rounded-[2rem] border border-portal-glass/80 p-5 shadow-portal-shell backdrop-blur-2xl sm:p-8 lg:p-10">
+          <header className="relative mb-9 border-b border-portal-line pb-8 text-center">
+            <Button variant="ghost" size="sm" className="mb-6 text-portal-ink/70 hover:bg-portal-soft-blue hover:text-portal-blue sm:absolute sm:left-0 sm:top-0 sm:mb-0" asChild>
+              <Link to="/">
+                <ArrowLeft /> Switch module
+              </Link>
+            </Button>
+            <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-portal-blue/15 bg-portal-soft-blue px-4 py-2 text-xs font-bold text-portal-blue">
+              <GraduationCap className="h-4 w-4" /> B.Tech Student Academic Portal
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <h1 className="mx-auto max-w-3xl font-display text-3xl font-extrabold text-portal-ink sm:text-4xl lg:text-5xl">
+              Select Your B.Tech <span className="text-portal-blue">Branch &amp; Semester</span>
+            </h1>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-portal-ink/60 sm:text-base">
+              Build your academic pathway, then enter a dashboard tailored to your current semester.
+            </p>
+          </header>
+
+          <section aria-labelledby="branch-title">
+            <div className="mb-5 flex items-center gap-3">
+              <span className="portal-active-surface flex h-9 w-9 items-center justify-center rounded-lg font-display text-sm font-bold text-primary-foreground shadow-portal-active">01</span>
+              <div>
+                <h2 id="branch-title" className="font-display text-lg font-bold sm:text-xl">Engineering branch</h2>
+                <p className="text-xs text-portal-ink/55 sm:text-sm">Choose your specialization</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {BRANCHES.map((b) => {
                 const Icon = b.icon;
                 const active = branch === b.code;
                 return (
-                  <button
+                  <Button
                     key={b.code}
                     type="button"
+                    variant="ghost"
+                    aria-pressed={active}
                     onClick={() => setBranch(b.code)}
-                    className={`text-left rounded-xl border-2 p-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 ${
+                    className={`group relative h-36 justify-start overflow-hidden whitespace-normal rounded-2xl border p-5 text-left transition-all duration-300 motion-safe:hover:-translate-y-2 focus-visible:ring-portal-cyan ${
                       active
-                        ? 'border-indigo-500 bg-indigo-50 shadow-sm'
-                        : 'border-gray-200 bg-white hover:border-indigo-200'
+                        ? 'portal-active-surface border-portal-blue text-primary-foreground shadow-portal-active'
+                        : 'border-portal-line/80 bg-portal-glass/90 text-portal-ink shadow-portal-card hover:border-portal-blue/35 hover:bg-portal-glass hover:shadow-portal-card-hover'
                     }`}
                   >
-                    <Icon className={`w-6 h-6 mb-2 ${active ? 'text-indigo-600' : 'text-gray-500'}`} />
-                    <p className={`font-semibold ${active ? 'text-indigo-700' : 'text-gray-900'}`}>{b.code}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{b.name}</p>
-                  </button>
+                    <span className="flex h-full w-full flex-col items-start justify-between">
+                      <span className={`flex h-11 w-11 items-center justify-center rounded-xl transition-transform duration-300 motion-safe:group-hover:scale-110 ${active ? 'bg-portal-glass/20' : 'bg-portal-soft-blue text-portal-blue'}`}>
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <span>
+                        <strong className="block font-display text-base font-bold">{b.code}</strong>
+                        <span className={`mt-1 block text-xs leading-4 ${active ? 'text-primary-foreground/75' : 'text-portal-ink/55'}`}>{b.name}</span>
+                      </span>
+                    </span>
+                    {active && <Check className="absolute right-4 top-4 h-5 w-5" aria-hidden="true" />}
+                  </Button>
                 );
               })}
+              <div className="hidden items-center justify-center rounded-2xl border border-dashed border-portal-line bg-portal-glass-muted/60 p-5 text-center lg:flex">
+                <div>
+                  <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-portal-soft-cyan text-portal-cyan">
+                    <BookOpen className="h-5 w-5" />
+                  </div>
+                  <p className="font-display text-sm font-bold">7 pathways</p>
+                  <p className="mt-1 text-xs text-portal-ink/50">One focused workspace</p>
+                </div>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </section>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between flex-wrap gap-2 mb-5">
+          <section className="mt-9 border-t border-portal-line pt-8" aria-labelledby="semester-title">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <span
-                  className={`inline-flex items-center justify-center h-8 w-8 rounded-full font-bold text-sm ${
-                    branch ? 'bg-indigo-600 text-white' : 'bg-gray-300 text-gray-600'
-                  }`}
-                >
-                  2
-                </span>
-                <h2 className="text-xl font-bold text-gray-900">Select Active Semester (Sem 1 to Sem 8)</h2>
+                <span className={`flex h-9 w-9 items-center justify-center rounded-lg font-display text-sm font-bold shadow-portal-card ${branch ? 'portal-active-surface text-primary-foreground' : 'bg-portal-glass-muted text-portal-ink/35'}`}>02</span>
+                <div>
+                  <h2 id="semester-title" className="font-display text-lg font-bold sm:text-xl">Academic semester</h2>
+                  <p className="text-xs text-portal-ink/55 sm:text-sm">Select a semester to enter your dashboard</p>
+                </div>
               </div>
               {selectedBranch && (
-                <p className="text-sm text-gray-500">
-                  Showing 8 Semesters for <span className="font-semibold text-gray-800">B.Tech {selectedBranch.code}</span>
-                </p>
+                <div className="flex items-center gap-2 rounded-lg border border-portal-line bg-portal-glass/80 px-3 py-2 text-xs text-portal-ink/60">
+                  <span className="h-2 w-2 rounded-full bg-portal-cyan" />
+                  B.Tech <strong className="font-bold text-portal-ink">{selectedBranch.code}</strong> selected
+                </div>
               )}
             </div>
 
             {!branch ? (
-              <p className="text-sm text-gray-500 border border-dashed border-gray-300 rounded-xl p-6 text-center">
-                Select your branch above to unlock semester selection.
-              </p>
+              <div className="flex min-h-28 items-center justify-center rounded-2xl border border-dashed border-portal-line bg-portal-glass-muted/65 px-5 text-center text-sm text-portal-ink/50">
+                Select an engineering branch above to unlock all eight semesters.
+              </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
                 {isLoading && !semesters
                   ? null
-                  : list.map((s) => (
-                      <button
-                        key={s.number}
-                        type="button"
-                        onClick={() => chooseSemester(s.number)}
-                        className={`text-left rounded-xl border-2 p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 ${
-                          semester === s.number
-                            ? 'border-indigo-500 bg-indigo-50'
-                            : 'border-gray-200 bg-white hover:border-indigo-200'
-                        }`}
-                      >
-                        <Badge variant="secondary" className="mb-3 text-xs">
-                          {YEAR_LABEL[s.number - 1]} • Sem {romanSemester(s.number)}
-                        </Badge>
-                        <p className="text-2xl font-bold text-gray-900 mb-2">Semester {s.number}</p>
-                        <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
-                          <span className="inline-flex items-center gap-1">
-                            <BookOpen className="w-3.5 h-3.5" /> {s.number === semester && subjects ? subjects.length : '—'} Subjects
-                          </span>
-                          <span className="inline-flex items-center gap-1">
-                            <Award className="w-3.5 h-3.5" /> Credits
-                          </span>
-                        </div>
-                        <span className="inline-flex items-center text-sm font-medium text-indigo-600">
-                          Open dashboard <ArrowRight className="w-4 h-4 ml-1" />
-                        </span>
-                      </button>
-                    ))}
+                  : list.map((s) => {
+                      const active = semester === s.number;
+                      return (
+                        <Button
+                          key={s.number}
+                          type="button"
+                          variant="ghost"
+                          onClick={() => chooseSemester(s.number)}
+                          className={`group h-28 flex-col gap-1 rounded-xl border transition-all duration-300 motion-safe:hover:-translate-y-1 focus-visible:ring-portal-cyan ${
+                            active
+                              ? 'portal-active-surface border-portal-blue text-primary-foreground shadow-portal-active'
+                              : 'border-portal-line bg-portal-glass/90 text-portal-ink shadow-portal-card hover:border-portal-blue/35 hover:bg-portal-soft-blue hover:text-portal-blue hover:shadow-portal-card-hover'
+                          }`}
+                        >
+                          <span className="font-display text-2xl font-extrabold">{String(s.number).padStart(2, '0')}</span>
+                          <span className={`text-[11px] font-semibold ${active ? 'text-primary-foreground/75' : 'text-portal-ink/50'}`}>{YEAR_LABEL[s.number - 1]}</span>
+                          <span className={`text-[10px] ${active ? 'text-primary-foreground/70' : 'text-portal-ink/45'}`}>Sem {romanSemester(s.number)}</span>
+                        </Button>
+                      );
+                    })}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </section>
+
+          <footer className="mt-8 flex flex-col gap-3 border-t border-portal-line pt-6 text-xs text-portal-ink/55 sm:flex-row sm:items-center sm:justify-between">
+            <span className="inline-flex items-center gap-2"><CalendarDays className="h-4 w-4 text-portal-cyan" /> Academic workspace ready</span>
+            <span className="inline-flex items-center gap-2 font-semibold text-portal-blue">Choose a semester to continue <ArrowRight className="h-4 w-4" /></span>
+          </footer>
+        </div>
       </main>
     </div>
   );
