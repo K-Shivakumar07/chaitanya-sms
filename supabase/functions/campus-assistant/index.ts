@@ -95,6 +95,9 @@ Rules:
 - For timetable questions (e.g. "what are Monday classes?"), list time, subject, faculty and room in order. Always state times in 12-hour format with AM/PM exactly as given.
 - For assignments give title, subject, due date and status. For deadlines mention urgency.
 - For syllabus questions list the units and their topics for that subject.
+- For attendance questions, use the ATTENDANCE RECORDS data: report classes attended vs classes held, compute the percentage (attended/held*100, one decimal), and mention the subject, period and remarks. If asked about overall attendance, summarize per subject and give the overall percentage across all records.
+- Announcements and activity may include posts marked "All semesters" (posted by faculty or admin staff) — these apply to every student, so always include them when answering about announcements or recent updates, and mention who posted them (posted_by) when relevant.
+- The FACULTY DIRECTORY lists department staff with designation, email and phone; use it for questions about who teaches or how to contact staff.
 - If something is not in the data, say it is not available for this semester. Never invent data.
 
 === DASHBOARD SNAPSHOT (Semester ${semester}) ===
@@ -107,8 +110,10 @@ STUDY MATERIALS: ${fmt(materials.data ?? [])}
 NOTES: ${fmt(notes.data ?? [])}
 ASSIGNMENTS: ${fmt(assignmentRows)}
 UPCOMING DEADLINES: ${fmt(deadlines.data ?? [])}
-ANNOUNCEMENTS: ${fmt(announcements.data ?? [])}
-RECENT ACTIVITY: ${fmt(activities.data ?? [])}
+ANNOUNCEMENTS (includes All-semesters staff posts): ${fmt(announcements.data ?? [])}
+RECENT ACTIVITY (includes All-semesters staff posts): ${fmt(activities.data ?? [])}
+ATTENDANCE RECORDS: ${fmt(attendance.data ?? [])}
+FACULTY DIRECTORY: ${fmt(faculty.data ?? [])}
 === END SNAPSHOT ===`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
