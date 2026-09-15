@@ -121,19 +121,19 @@ const CrudPanel = ({
   };
 
   return (
-    <Card>
+    <Card className="overflow-hidden shadow-sm">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div>
           <CardTitle className="text-lg">{title}</CardTitle>
           {description && <CardDescription>{description}</CardDescription>}
         </div>
-        <Button size="sm" onClick={() => setOpen((v) => !v)}>
+        <Button size="sm" onClick={() => setOpen((v) => !v)} className="shrink-0">
           <Plus className="w-4 h-4 mr-1" /> {open ? 'Close' : 'Add new'}
         </Button>
       </CardHeader>
       <CardContent className="space-y-4">
         {open && (
-          <form onSubmit={submit} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-lg bg-muted/50">
+          <form onSubmit={submit} className="grid grid-cols-1 gap-4 rounded-lg border border-border bg-muted/50 p-4 md:grid-cols-2">
             {fields.map((f) => (
               <div key={f.name} className={f.full || f.type === 'textarea' ? 'md:col-span-2' : ''}>
                 <Label htmlFor={`${table}-${f.name}`} className="text-xs">
@@ -194,9 +194,9 @@ const CrudPanel = ({
         ) : !rows || rows.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nothing added yet.</p>
         ) : (
-          <ul className="divide-y rounded-lg border">
+          <ul className="divide-y divide-border rounded-lg border border-border bg-card">
             {rows.map((row: any) => (
-              <li key={row.id} className="flex items-start justify-between gap-4 p-3">
+              <li key={row.id} className="flex items-start justify-between gap-4 p-4 transition-colors hover:bg-muted/40">
                 <div className="min-w-0">
                   <p className="text-sm font-medium truncate">{primary(row)}</p>
                   {secondary && (

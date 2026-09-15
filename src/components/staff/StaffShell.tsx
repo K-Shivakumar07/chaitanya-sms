@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -28,23 +28,24 @@ const StaffShell = ({
   allowAllSemesters = false,
   children,
 }: StaffShellProps) => (
-  <div className="min-h-screen bg-gray-50">
-    <header className="bg-white shadow-sm border-b">
-      <div className="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+  <div className="min-h-screen bg-background">
+    <header className="sticky top-0 z-40 border-b border-border bg-card shadow-sm">
+      <div className="container mx-auto flex flex-wrap items-center justify-between gap-4 px-4 py-3">
         <div className="flex items-center gap-3">
           <img
             src="/lovable-uploads/63f128ca-12f8-480a-9026-c6299e38a2c2.png"
             alt="Chaitanya College Logo"
-            className="h-10 w-auto object-contain"
+            className="h-11 w-auto object-contain"
           />
-          <div>
-            <p className="font-semibold text-gray-900 leading-tight">{title}</p>
-            <p className="text-xs text-gray-500">{subtitle}</p>
+          <div className="hidden sm:block">
+            <p className="font-semibold leading-tight text-foreground">{title}</p>
+            <p className="text-xs text-muted-foreground">{subtitle}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-1 items-center justify-end gap-2 sm:flex-none sm:gap-3">
           <Select value={String(semester)} onValueChange={(v) => onSemesterChange(Number(v))}>
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-[150px] bg-card sm:w-[170px]" aria-label="Select semester">
+              <GraduationCap className="mr-2 h-4 w-4 shrink-0" />
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-popover z-50">
@@ -56,9 +57,10 @@ const StaffShell = ({
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline" asChild>
+          <Button variant="outline" asChild className="shrink-0">
             <Link to="/">
-              <ArrowLeft className="w-4 h-4 mr-1" /> Switch module
+              <ArrowLeft className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Switch module</span>
             </Link>
           </Button>
         </div>

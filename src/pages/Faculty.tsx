@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import StaffShell from '@/components/staff/StaffShell';
-import CrudPanel from '@/components/staff/CrudPanel';
+import StaffDashboard from '@/components/staff/StaffDashboard';
 import { facultyPanels } from '@/components/staff/panels';
 
 const Faculty = () => {
@@ -24,20 +23,13 @@ const Faculty = () => {
       onSemesterChange={setSemester}
       allowAllSemesters={allowAllSemesters}
     >
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="flex flex-wrap h-auto">
-          {facultyPanels.map((p) => (
-            <TabsTrigger key={p.value} value={p.value}>
-              {p.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        {facultyPanels.map((p) => (
-          <TabsContent key={p.value} value={p.value} className="mt-6">
-            <CrudPanel {...p.panel(semester)} />
-          </TabsContent>
-        ))}
-      </Tabs>
+      <StaffDashboard
+        role="Faculty"
+        semester={semester}
+        panels={facultyPanels}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
     </StaffShell>
   );
 };
