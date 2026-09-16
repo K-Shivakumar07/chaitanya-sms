@@ -8,10 +8,26 @@ import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
 import SemesterGuard from '@/components/SemesterGuard';
 import { useNotes } from '@/hooks/useSemesterData';
+import { downloadCourseFile } from '@/lib/files';
+import { useToast } from '@/hooks/use-toast';
 
 const Notes = () => {
   const [query, setQuery] = useState('');
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const { toast } = useToast();
   const { data, isLoading } = useNotes();
+
+  const handleDownload = async (id: string, fileUrl?: string | null) => {
+    if (!fileUrl) return;
+    setBusyId(id);
+    try {
+      await downloadCourseFile(fileUrl);
+    } catch (err: any) {
+      toast({ title: 'Could not open the file', description: err.message, variant: 'destructive' });
+    } finally {
+      setBusyId(null);
+    }
+  };
 
   const notes = (data ?? []).filter((n) => {
     const q = query.trim().toLowerCase();
