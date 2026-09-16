@@ -198,6 +198,23 @@ const CrudPanel = ({
                     />
                     <span className="text-sm text-muted-foreground">{f.placeholder ?? 'Yes'}</span>
                   </div>
+                ) : f.type === 'file' ? (
+                  <div className="space-y-2">
+                    <Input
+                      id={`${table}-${f.name}`}
+                      type="file"
+                      accept=".pdf,.ppt,.pptx,.doc,.docx,.zip"
+                      className="cursor-pointer file:mr-3 file:rounded file:border-0 file:bg-primary file:px-3 file:py-1 file:text-primary-foreground"
+                      onChange={(e) => set(f.name, e.target.files?.[0] ?? '')}
+                    />
+                    <Input
+                      type="text"
+                      placeholder="…or paste an external link (https://…)"
+                      value={typeof form[f.name] === 'string' ? form[f.name] : ''}
+                      disabled={form[f.name] instanceof File}
+                      onChange={(e) => set(f.name, e.target.value)}
+                    />
+                  </div>
                 ) : (
                   <Input
                     id={`${table}-${f.name}`}
@@ -210,9 +227,9 @@ const CrudPanel = ({
               </div>
             ))}
             <div className="md:col-span-2 flex justify-end">
-              <Button type="submit" disabled={insert.isPending}>
-                {insert.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                Save
+              <Button type="submit" disabled={insert.isPending || uploading}>
+                {(insert.isPending || uploading) && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                {uploading ? 'Uploading…' : 'Save'}
               </Button>
             </div>
           </form>
