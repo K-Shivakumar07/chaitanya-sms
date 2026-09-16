@@ -121,6 +121,8 @@ const CrudPanel = ({
       else payload[f.name] = raw;
     }
 
+    Object.assign(payload, fileMeta);
+
     try {
       if (allSemesters) {
         await insert.mutateAsync(
