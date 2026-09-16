@@ -74,8 +74,14 @@ const Materials = () => {
                       </span>
                       <span>{m.downloads} downloads</span>
                     </div>
-                    <Button size="sm" className="w-full">
-                      <Download className="w-4 h-4 mr-2" /> Download
+                    <Button
+                      size="sm"
+                      className="w-full"
+                      disabled={!m.file_url || busyId === m.id}
+                      onClick={() => handleDownload(m.id, m.file_url)}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      {!m.file_url ? 'No file uploaded' : busyId === m.id ? 'Preparing…' : 'Download'}
                     </Button>
                   </CardContent>
                 </Card>
