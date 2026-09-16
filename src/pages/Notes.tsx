@@ -87,8 +87,14 @@ const Notes = () => {
                     </div>
                     <div className="flex items-center gap-3">
                       <Badge variant="outline">{n.file_type}</Badge>
-                      <Button size="sm" variant="outline">
-                        <Download className="w-4 h-4 mr-2" /> Download
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={!n.file_url || busyId === n.id}
+                        onClick={() => handleDownload(n.id, n.file_url)}
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        {!n.file_url ? 'No file' : busyId === n.id ? 'Preparing…' : 'Download'}
                       </Button>
                     </div>
                   </CardContent>
