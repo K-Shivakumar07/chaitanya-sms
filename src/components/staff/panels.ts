@@ -40,7 +40,7 @@ export const materialsPanel = (semester: number): PanelConfig => ({
     { name: 'unit_no', label: 'Unit number', type: 'number' },
     { name: 'file_type', label: 'File type', type: 'select', options: fileTypes, defaultValue: 'PDF' },
     { name: 'size_label', label: 'File size', placeholder: '2.4 MB', defaultValue: '2.0 MB' },
-    { name: 'file_url', label: 'File link (optional)', placeholder: 'https://…' },
+    { name: 'file_url', label: 'Upload file', type: 'file', full: true },
     { name: 'description', label: 'Description', type: 'textarea' },
   ],
   primary: (r) => r.title,
