@@ -80,8 +80,7 @@ const CrudPanel = ({
     const allSemesters = scoped && semester === 0;
     if (scoped && semester) payload.semester = semester;
 
-    const hasSizeField = fields.some((f) => f.name === 'size_label');
-    const hasTypeField = fields.some((f) => f.name === 'file_type');
+    const fileMeta: Record<string, unknown> = {};
 
     for (const f of fields) {
       const raw = form[f.name];
@@ -90,8 +89,8 @@ const CrudPanel = ({
           try {
             setUploading(true);
             payload[f.name] = await uploadCourseFile(table, raw);
-            if (hasSizeField) payload.size_label = formatFileSize(raw.size);
-            if (hasTypeField) payload.file_type = extensionLabel(raw.name);
+            if (fields.some((x) => x.name === 'size_label')) fileMeta.size_label = formatFileSize(raw.size);
+            if (fields.some((x) => x.name === 'file_type')) fileMeta.file_type = extensionLabel(raw.name);
           } catch (err: any) {
             setUploading(false);
             toast({ title: 'Upload failed', description: err.message, variant: 'destructive' });
@@ -99,6 +98,8 @@ const CrudPanel = ({
           } finally {
             setUploading(false);
           }
+        } else if (typeof raw === 'string' && raw.trim()) {
+          payload[f.name] = raw.trim();
         } else if (f.required) {
           toast({ title: `${f.label} is required`, variant: 'destructive' });
           return;
