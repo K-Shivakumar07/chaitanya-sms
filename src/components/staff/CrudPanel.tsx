@@ -19,7 +19,7 @@ import { useDeleteRow, useInsertRow, useTableRows } from '@/hooks/useStaffData';
 export interface FieldDef {
   name: string;
   label: string;
-  type?: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'checkbox' | 'list';
+  type?: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'checkbox' | 'list' | 'file';
   options?: { value: string; label: string }[];
   required?: boolean;
   placeholder?: string;
