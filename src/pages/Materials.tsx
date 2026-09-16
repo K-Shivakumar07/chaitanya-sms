@@ -8,10 +8,26 @@ import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
 import SemesterGuard from '@/components/SemesterGuard';
 import { useMaterials } from '@/hooks/useSemesterData';
+import { downloadCourseFile } from '@/lib/files';
+import { useToast } from '@/hooks/use-toast';
 
 const Materials = () => {
   const [query, setQuery] = useState('');
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const { toast } = useToast();
   const { data, isLoading } = useMaterials();
+
+  const handleDownload = async (id: string, fileUrl?: string | null) => {
+    if (!fileUrl) return;
+    setBusyId(id);
+    try {
+      await downloadCourseFile(fileUrl);
+    } catch (err: any) {
+      toast({ title: 'Could not open the file', description: err.message, variant: 'destructive' });
+    } finally {
+      setBusyId(null);
+    }
+  };
 
   const materials = (data ?? []).filter((m) => {
     const q = query.trim().toLowerCase();
@@ -74,8 +90,14 @@ const Materials = () => {
                       </span>
                       <span>{m.downloads} downloads</span>
                     </div>
-                    <Button size="sm" className="w-full">
-                      <Download className="w-4 h-4 mr-2" /> Download
+                    <Button
+                      size="sm"
+                      className="w-full"
+                      disabled={!m.file_url || busyId === m.id}
+                      onClick={() => handleDownload(m.id, m.file_url)}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      {!m.file_url ? 'No file uploaded' : busyId === m.id ? 'Preparing…' : 'Download'}
                     </Button>
                   </CardContent>
                 </Card>

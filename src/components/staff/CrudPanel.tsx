@@ -15,11 +15,12 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useDeleteRow, useInsertRow, useTableRows } from '@/hooks/useStaffData';
+import { uploadCourseFile, formatFileSize, extensionLabel } from '@/lib/files';
 
 export interface FieldDef {
   name: string;
   label: string;
-  type?: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'checkbox' | 'list';
+  type?: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'checkbox' | 'list' | 'file';
   options?: { value: string; label: string }[];
   required?: boolean;
   placeholder?: string;
@@ -69,6 +70,7 @@ const CrudPanel = ({
   const initial = useMemo(() => emptyState(fields), [fields]);
   const [form, setForm] = useState<Record<string, any>>(initial);
   const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const set = (name: string, value: any) => setForm((prev) => ({ ...prev, [name]: value }));
 
@@ -77,8 +79,33 @@ const CrudPanel = ({
     const payload: Record<string, unknown> = { ...extraValues };
     const allSemesters = scoped && semester === 0;
     if (scoped && semester) payload.semester = semester;
+
+    const fileMeta: Record<string, unknown> = {};
+
     for (const f of fields) {
       const raw = form[f.name];
+      if (f.type === 'file') {
+        if (raw instanceof File) {
+          try {
+            setUploading(true);
+            payload[f.name] = await uploadCourseFile(table, raw);
+            if (fields.some((x) => x.name === 'size_label')) fileMeta.size_label = formatFileSize(raw.size);
+            if (fields.some((x) => x.name === 'file_type')) fileMeta.file_type = extensionLabel(raw.name);
+          } catch (err: any) {
+            setUploading(false);
+            toast({ title: 'Upload failed', description: err.message, variant: 'destructive' });
+            return;
+          } finally {
+            setUploading(false);
+          }
+        } else if (typeof raw === 'string' && raw.trim()) {
+          payload[f.name] = raw.trim();
+        } else if (f.required) {
+          toast({ title: `${f.label} is required`, variant: 'destructive' });
+          return;
+        }
+        continue;
+      }
       if (f.required && (raw === '' || raw === undefined || raw === null)) {
         toast({ title: `${f.label} is required`, variant: 'destructive' });
         return;
@@ -93,6 +120,8 @@ const CrudPanel = ({
           .filter(Boolean);
       else payload[f.name] = raw;
     }
+
+    Object.assign(payload, fileMeta);
 
     try {
       if (allSemesters) {
@@ -169,6 +198,23 @@ const CrudPanel = ({
                     />
                     <span className="text-sm text-muted-foreground">{f.placeholder ?? 'Yes'}</span>
                   </div>
+                ) : f.type === 'file' ? (
+                  <div className="space-y-2">
+                    <Input
+                      id={`${table}-${f.name}`}
+                      type="file"
+                      accept=".pdf,.ppt,.pptx,.doc,.docx,.zip"
+                      className="cursor-pointer file:mr-3 file:rounded file:border-0 file:bg-primary file:px-3 file:py-1 file:text-primary-foreground"
+                      onChange={(e) => set(f.name, e.target.files?.[0] ?? '')}
+                    />
+                    <Input
+                      type="text"
+                      placeholder="…or paste an external link (https://…)"
+                      value={typeof form[f.name] === 'string' ? form[f.name] : ''}
+                      disabled={form[f.name] instanceof File}
+                      onChange={(e) => set(f.name, e.target.value)}
+                    />
+                  </div>
                 ) : (
                   <Input
                     id={`${table}-${f.name}`}
@@ -181,9 +227,9 @@ const CrudPanel = ({
               </div>
             ))}
             <div className="md:col-span-2 flex justify-end">
-              <Button type="submit" disabled={insert.isPending}>
-                {insert.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                Save
+              <Button type="submit" disabled={insert.isPending || uploading}>
+                {(insert.isPending || uploading) && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                {uploading ? 'Uploading…' : 'Save'}
               </Button>
             </div>
           </form>

@@ -8,10 +8,26 @@ import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
 import SemesterGuard from '@/components/SemesterGuard';
 import { useNotes } from '@/hooks/useSemesterData';
+import { downloadCourseFile } from '@/lib/files';
+import { useToast } from '@/hooks/use-toast';
 
 const Notes = () => {
   const [query, setQuery] = useState('');
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const { toast } = useToast();
   const { data, isLoading } = useNotes();
+
+  const handleDownload = async (id: string, fileUrl?: string | null) => {
+    if (!fileUrl) return;
+    setBusyId(id);
+    try {
+      await downloadCourseFile(fileUrl);
+    } catch (err: any) {
+      toast({ title: 'Could not open the file', description: err.message, variant: 'destructive' });
+    } finally {
+      setBusyId(null);
+    }
+  };
 
   const notes = (data ?? []).filter((n) => {
     const q = query.trim().toLowerCase();
@@ -71,8 +87,14 @@ const Notes = () => {
                     </div>
                     <div className="flex items-center gap-3">
                       <Badge variant="outline">{n.file_type}</Badge>
-                      <Button size="sm" variant="outline">
-                        <Download className="w-4 h-4 mr-2" /> Download
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={!n.file_url || busyId === n.id}
+                        onClick={() => handleDownload(n.id, n.file_url)}
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        {!n.file_url ? 'No file' : busyId === n.id ? 'Preparing…' : 'Download'}
                       </Button>
                     </div>
                   </CardContent>

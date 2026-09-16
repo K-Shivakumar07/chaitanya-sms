@@ -47,6 +47,7 @@ export interface MaterialRow {
   size_label: string;
   uploaded_at: string;
   downloads: number;
+  file_url: string | null;
 }
 
 export interface NoteRow {
@@ -60,6 +61,7 @@ export interface NoteRow {
   pages: number;
   size_label: string;
   uploaded_at: string;
+  file_url: string | null;
 }
 
 export interface AssignmentRow {
