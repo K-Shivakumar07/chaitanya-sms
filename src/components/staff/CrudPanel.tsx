@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useDeleteRow, useInsertRow, useTableRows } from '@/hooks/useStaffData';
+import { uploadCourseFile, formatFileSize, extensionLabel } from '@/lib/files';
 
 export interface FieldDef {
   name: string;
