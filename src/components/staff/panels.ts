@@ -61,7 +61,7 @@ export const notesPanel = (semester: number): PanelConfig => ({
     { name: 'pages', label: 'Pages', type: 'number', defaultValue: 10 },
     { name: 'file_type', label: 'File type', type: 'select', options: fileTypes, defaultValue: 'PDF' },
     { name: 'size_label', label: 'File size', defaultValue: '1.8 MB' },
-    { name: 'file_url', label: 'File link (optional)', placeholder: 'https://…' },
+    { name: 'file_url', label: 'Upload file', type: 'file', full: true },
   ],
   primary: (r) => r.title,
   secondary: (r) => `${r.subject_name} • ${r.faculty} • ${r.pages} pages`,
