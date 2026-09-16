@@ -70,6 +70,7 @@ const CrudPanel = ({
   const initial = useMemo(() => emptyState(fields), [fields]);
   const [form, setForm] = useState<Record<string, any>>(initial);
   const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const set = (name: string, value: any) => setForm((prev) => ({ ...prev, [name]: value }));
 
@@ -78,8 +79,32 @@ const CrudPanel = ({
     const payload: Record<string, unknown> = { ...extraValues };
     const allSemesters = scoped && semester === 0;
     if (scoped && semester) payload.semester = semester;
+
+    const hasSizeField = fields.some((f) => f.name === 'size_label');
+    const hasTypeField = fields.some((f) => f.name === 'file_type');
+
     for (const f of fields) {
       const raw = form[f.name];
+      if (f.type === 'file') {
+        if (raw instanceof File) {
+          try {
+            setUploading(true);
+            payload[f.name] = await uploadCourseFile(table, raw);
+            if (hasSizeField) payload.size_label = formatFileSize(raw.size);
+            if (hasTypeField) payload.file_type = extensionLabel(raw.name);
+          } catch (err: any) {
+            setUploading(false);
+            toast({ title: 'Upload failed', description: err.message, variant: 'destructive' });
+            return;
+          } finally {
+            setUploading(false);
+          }
+        } else if (f.required) {
+          toast({ title: `${f.label} is required`, variant: 'destructive' });
+          return;
+        }
+        continue;
+      }
       if (f.required && (raw === '' || raw === undefined || raw === null)) {
         toast({ title: `${f.label} is required`, variant: 'destructive' });
         return;
