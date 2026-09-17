@@ -13,6 +13,8 @@ import {
 } from '@/data/documents';
 import { useMaterials, useNotes, useAssignments } from '@/hooks/useSemesterData';
 import { useSemester, romanSemester } from '@/context/SemesterContext';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useStudentProfile, initials } from '@/hooks/useStudentProfile';
 
 const sectionSuggestions = [
   { title: 'Study Materials', link: '/materials' },
@@ -59,6 +61,7 @@ const Header = () => {
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { semester, branch } = useSemester();
+  const { profile } = useStudentProfile();
 
   const { data: materials } = useMaterials();
   const { data: notes } = useNotes();
@@ -304,7 +307,10 @@ const Header = () => {
 
             <Link to="/profile">
               <Button variant="ghost" size="sm">
-                <User className="w-5 h-5 mr-2" />
+                <Avatar className="w-6 h-6 mr-2">
+                  <AvatarImage src={profile.avatar || undefined} alt="Profile photo" />
+                  <AvatarFallback className="text-[10px]">{initials(profile.name)}</AvatarFallback>
+                </Avatar>
                 Profile
               </Button>
             </Link>
