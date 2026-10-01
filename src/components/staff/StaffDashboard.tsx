@@ -26,7 +26,7 @@ interface StaffDashboardProps {
   onTabChange: (value: string) => void;
 }
 
-const panelIcons = {
+export const panelIcons = {
   subjects: GraduationCap,
   syllabus: BookOpen,
   timetable: CalendarDays,
