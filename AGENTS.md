@@ -1,0 +1,3 @@
+# Project Architecture Rules
+
+- Keep portal navigation in `PortalSidebar` with opt-in role styling so Student, Faculty, and Admin share behavior without sharing forced presentation.
