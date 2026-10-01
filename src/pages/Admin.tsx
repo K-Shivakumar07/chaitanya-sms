@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import StaffShell from '@/components/staff/StaffShell';
 import StaffDashboard from '@/components/staff/StaffDashboard';
 import { adminPanels } from '@/components/staff/panels';
+import { panelIcons } from '@/components/staff/StaffDashboard';
+import { FileText } from 'lucide-react';
 
 const Admin = () => {
   const [semester, setSemester] = useState<number>(7);
@@ -22,6 +24,9 @@ const Admin = () => {
       semester={semester}
       onSemesterChange={setSemester}
       allowAllSemesters={allowAllSemesters}
+      navItems={adminPanels.map((p) => ({ key: p.value, title: p.label, icon: panelIcons[p.value as keyof typeof panelIcons] ?? FileText }))}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
     >
       <StaffDashboard
         role="Admin"
