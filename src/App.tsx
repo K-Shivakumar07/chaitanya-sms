@@ -20,6 +20,7 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Attendance from "./pages/Attendance";
 import Assistant from "./pages/Assistant";
+import StudentLayout from "./components/StudentLayout";
 import AssistantBot from "./components/AssistantBot";
 
 const queryClient = new QueryClient();
@@ -37,15 +38,17 @@ const App = () => (
             <Route path="/student" element={<SelectSemester />} />
             <Route path="/faculty" element={<Faculty />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/syllabus" element={<Syllabus />} />
-            <Route path="/timetable" element={<Timetable />} />
-            <Route path="/materials" element={<Materials />} />
-            <Route path="/notes" element={<Notes />} />
-            <Route path="/assignments" element={<Assignments />} />
-            <Route path="/announcements" element={<Announcements />} />
-            <Route path="/attendance" element={<Attendance />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route element={<StudentLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/syllabus" element={<Syllabus />} />
+              <Route path="/timetable" element={<Timetable />} />
+              <Route path="/materials" element={<Materials />} />
+              <Route path="/notes" element={<Notes />} />
+              <Route path="/assignments" element={<Assignments />} />
+              <Route path="/announcements" element={<Announcements />} />
+              <Route path="/attendance" element={<Attendance />} />
+              <Route path="/profile" element={<Profile />} />
+            </Route>
             <Route path="/assistant" element={<Assistant />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
