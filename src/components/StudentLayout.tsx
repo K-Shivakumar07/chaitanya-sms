@@ -22,7 +22,13 @@ const StudentLayout = () => {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
-        <PortalSidebar label="Student Portal" items={items} activeKey={pathname} onSelect={(k) => navigate(k)} />
+        <PortalSidebar
+          label="Student Portal"
+          items={items}
+          activeKey={pathname}
+          onSelect={(k) => navigate(k)}
+          studentStyle
+        />
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="flex h-10 items-center gap-2 border-b border-border bg-card px-2">
             <SidebarTrigger aria-label="Toggle menu" />

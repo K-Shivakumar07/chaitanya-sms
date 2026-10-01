@@ -94,6 +94,15 @@ All colors MUST be HSL.
 
     --sidebar-ring: 217.2 91.2% 59.8%;
 
+    --student-sidebar-background: 0 0% 100%;
+    --student-sidebar-foreground: 226 18% 39%;
+    --student-sidebar-primary: 237 62% 37%;
+    --student-sidebar-primary-foreground: 0 0% 100%;
+    --student-sidebar-accent: 246 69% 96%;
+    --student-sidebar-accent-foreground: 246 52% 47%;
+    --student-sidebar-border: 240 30% 92%;
+    --student-sidebar-ring: 246 52% 47%;
+
     --portal-canvas: 214 45% 96%;
     --portal-ink: 211 64% 8%;
     --portal-blue: 215 100% 52%;
@@ -143,6 +152,14 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    --student-sidebar-background: 237 28% 13%;
+    --student-sidebar-foreground: 240 20% 82%;
+    --student-sidebar-primary: 244 72% 78%;
+    --student-sidebar-primary-foreground: 237 28% 13%;
+    --student-sidebar-accent: 241 25% 22%;
+    --student-sidebar-accent-foreground: 244 72% 82%;
+    --student-sidebar-border: 240 20% 25%;
+    --student-sidebar-ring: 244 72% 78%;
   }
 }
 
@@ -162,6 +179,17 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
+  .student-portal-sidebar {
+    --sidebar-background: var(--student-sidebar-background);
+    --sidebar-foreground: var(--student-sidebar-foreground);
+    --sidebar-primary: var(--student-sidebar-primary);
+    --sidebar-primary-foreground: var(--student-sidebar-primary-foreground);
+    --sidebar-accent: var(--student-sidebar-accent);
+    --sidebar-accent-foreground: var(--student-sidebar-accent-foreground);
+    --sidebar-border: var(--student-sidebar-border);
+    --sidebar-ring: var(--student-sidebar-ring);
+  }
+
   .portal-grid {
     background-image:
       linear-gradient(hsl(var(--portal-line) / 0.35) 1px, transparent 1px),
