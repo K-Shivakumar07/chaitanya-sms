@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Book, Calendar, FileText, Download, Bell, BookOpen, UserCheck } from 'lucide-react';
+import { Book, Calendar, FileText, Download, Bell, BookOpen, UserCheck, LayoutDashboard, User } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
@@ -11,6 +11,9 @@ import { useSemester, romanSemester } from '@/context/SemesterContext';
 import { useMaterials, useNotes, useAssignments } from '@/hooks/useSemesterData';
 import { buildDocumentIndex, searchDocuments } from '@/data/documents';
 import { useSearchParams } from 'react-router-dom';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import PortalSidebar, { type PortalNavItem } from '@/components/PortalSidebar';
+import { useNavigate } from 'react-router-dom';
 
 const features = [
   { title: 'Syllabus', description: 'Unit-wise curriculum for every subject', icon: BookOpen, link: '/syllabus', color: 'bg-blue-500' },
@@ -22,8 +25,21 @@ const features = [
   { title: 'Attendance', description: 'View your attendance record', icon: UserCheck, link: '/attendance', color: 'bg-teal-500' },
 ];
 
+const studentNavigation: PortalNavItem[] = [
+  { key: '/dashboard', title: 'Dashboard', icon: LayoutDashboard },
+  { key: '/syllabus', title: 'Syllabus', icon: BookOpen },
+  { key: '/timetable', title: 'Timetable', icon: Calendar },
+  { key: '/materials', title: 'Study Materials', icon: Book },
+  { key: '/notes', title: 'Notes & PDFs', icon: FileText },
+  { key: '/assignments', title: 'Assignments', icon: Download },
+  { key: '/announcements', title: 'Announcements', icon: Bell },
+  { key: '/attendance', title: 'Attendance', icon: UserCheck },
+  { key: '/profile', title: 'Profile', icon: User },
+];
+
 const Dashboard = () => {
   const { semester, branch } = useSemester();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('search');
 
@@ -44,20 +60,33 @@ const Dashboard = () => {
 
   return (
     <SemesterGuard>
-      <div className="min-h-screen bg-gray-50">
-        <Header />
+      <SidebarProvider>
+        <div className="min-h-screen bg-gray-50">
+          <Header />
+          <div className="flex min-h-[calc(100vh-4rem)] w-full">
+            <PortalSidebar
+              label="Student workspace"
+              items={studentNavigation}
+              activeKey="/dashboard"
+              onSelect={(key) => navigate(key)}
+              studentStyle
+            />
 
-        <main className="container mx-auto px-4 py-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {searchQuery ? `Search results for "${searchQuery}"` : `${branch ? `${branch} · ` : ''}Semester ${romanSemester(semester ?? 1)} Dashboard`}
-            </h1>
-            <p className="text-gray-600">
-              {searchQuery
-                ? `Found ${totalResults} result(s) in this semester`
-                : "Here's what's happening with your studies today."}
-            </p>
-          </div>
+            <main className="min-w-0 flex-1 px-4 py-8 sm:px-6 lg:px-8">
+              <div className="mx-auto max-w-7xl">
+                <div className="mb-8 flex items-start gap-3">
+                  <SidebarTrigger className="mt-1 shrink-0" aria-label="Toggle student workspace" />
+                  <div>
+                    <h1 className="mb-2 text-3xl font-bold text-gray-900">
+                      {searchQuery ? `Search results for "${searchQuery}"` : `${branch ? `${branch} · ` : ''}Semester ${romanSemester(semester ?? 1)} Dashboard`}
+                    </h1>
+                    <p className="text-gray-600">
+                      {searchQuery
+                        ? `Found ${totalResults} result(s) in this semester`
+                        : "Here's what's happening with your studies today."}
+                    </p>
+                  </div>
+                </div>
 
           {searchQuery && documentResults.length > 0 && (
             <div className="mb-8">
@@ -120,9 +149,12 @@ const Dashboard = () => {
             })}
           </div>
 
-          {!searchQuery && <RecentActivity />}
-        </main>
-      </div>
+                {!searchQuery && <RecentActivity />}
+              </div>
+            </main>
+          </div>
+        </div>
+      </SidebarProvider>
     </SemesterGuard>
   );
 };
