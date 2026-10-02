@@ -1,6 +1,6 @@
 import React from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { GraduationCap, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -45,35 +45,6 @@ const PortalSidebar = ({ label, items, activeKey, onSelect, studentStyle = false
 
   return (
     <Sidebar collapsible="icon" className={studentStyle ? 'student-portal-sidebar' : undefined}>
-      {studentStyle && (
-        <SidebarHeader className="border-b border-sidebar-border px-4 py-5 group-data-[collapsible=icon]:px-2">
-          <button
-            type="button"
-            onClick={() => select('/dashboard')}
-            className="flex min-h-12 w-full items-center gap-3 text-left outline-none ring-sidebar-ring focus-visible:ring-2"
-            aria-label="Open student dashboard"
-          >
-            <img
-              src="/lovable-uploads/63f128ca-12f8-480a-9026-c6299e38a2c2.png"
-              alt="Chaitanya College Logo"
-              className="h-11 w-11 shrink-0 object-contain"
-            />
-            {!collapsed && (
-              <span className="min-w-0">
-                <span className="block font-semibold leading-5 text-sidebar-primary">Chaitanya College</span>
-                <span className="block text-sm font-semibold text-sidebar-foreground">Student Portal</span>
-              </span>
-            )}
-          </button>
-          {!collapsed && (
-            <div className="mt-3 flex items-center gap-2 rounded-md bg-sidebar-accent px-3 py-2 text-sm font-semibold text-sidebar-accent-foreground">
-              <GraduationCap className="h-4 w-4 shrink-0" aria-hidden="true" />
-              <span className="truncate">Student Portal Authorized</span>
-            </div>
-          )}
-        </SidebarHeader>
-      )}
-
       <SidebarContent className={studentStyle ? 'px-2 py-4' : undefined}>
         <SidebarGroup className={studentStyle ? 'p-0' : undefined}>
           <SidebarGroupLabel className={studentStyle ? 'mb-2 px-3 text-[11px] font-semibold uppercase text-sidebar-foreground/60' : undefined}>
