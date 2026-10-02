@@ -44,7 +44,11 @@ const PortalSidebar = ({ label, items, activeKey, onSelect, studentStyle = false
   };
 
   return (
-    <Sidebar collapsible="icon" className={studentStyle ? 'student-portal-sidebar' : undefined}>
+    <Sidebar
+      collapsible="icon"
+      desktopHeaderOffset={studentStyle}
+      className={studentStyle ? 'student-portal-sidebar' : undefined}
+    >
       <SidebarContent className={studentStyle ? 'px-2 py-4' : undefined}>
         <SidebarGroup className={studentStyle ? 'p-0' : undefined}>
           <SidebarGroupLabel className={studentStyle ? 'mb-2 px-3 text-[11px] font-semibold uppercase text-sidebar-foreground/60' : undefined}>
