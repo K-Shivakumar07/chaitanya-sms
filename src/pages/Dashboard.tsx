@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Book, Calendar, FileText, Download, Bell, BookOpen, UserCheck, LayoutDashboard, User } from 'lucide-react';
+import { Book, Calendar, FileText, Download, Bell, BookOpen, UserCheck, LayoutDashboard, User, GraduationCap, Hash, Award } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
@@ -8,12 +8,13 @@ import QuickStats from '@/components/QuickStats';
 import RecentActivity from '@/components/RecentActivity';
 import SemesterGuard from '@/components/SemesterGuard';
 import { useSemester, romanSemester } from '@/context/SemesterContext';
-import { useMaterials, useNotes, useAssignments } from '@/hooks/useSemesterData';
+import { useMaterials, useNotes, useAssignments, useSubjects } from '@/hooks/useSemesterData';
 import { buildDocumentIndex, searchDocuments } from '@/data/documents';
 import { useSearchParams } from 'react-router-dom';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import PortalSidebar, { type PortalNavItem } from '@/components/PortalSidebar';
 import { useNavigate } from 'react-router-dom';
+import { useStudentProfile } from '@/hooks/useStudentProfile';
 
 const features = [
   { title: 'Syllabus', description: 'Unit-wise curriculum for every subject', icon: BookOpen, link: '/syllabus', color: 'bg-blue-500' },
@@ -39,9 +40,24 @@ const studentNavigation: PortalNavItem[] = [
 
 const Dashboard = () => {
   const { semester, branch } = useSemester();
+  const { profile } = useStudentProfile();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('search');
+  const { data: subjectsData } = useSubjects();
+  const subjects = subjectsData ?? [];
+
+  const branchFullName =
+    ({
+      'CSE(DS)': 'Computer Science & Engineering (Data Science)',
+      CSE: 'Computer Science & Engineering',
+      'AI&ML': 'Computer Science & Engineering (AI&ML)',
+      ECE: 'Electronics & Communication Engineering',
+      EEE: 'Electrical & Electronics Engineering',
+      MECH: 'Mechanical Engineering',
+      CIVIL: 'Civil Engineering',
+    } as Record<string, string>)[branch ?? ''] ?? branch ?? 'B.Tech Program';
+  const yearLabel = ['1st', '2nd', '3rd', '4th'][Math.ceil((semester ?? 1) / 2) - 1] ?? '1st';
 
   const { data: materials } = useMaterials();
   const { data: notes } = useNotes();
@@ -78,16 +94,75 @@ const Dashboard = () => {
               <div className="mx-auto max-w-7xl">
                 <div className="mb-8 flex items-start gap-3">
                   <SidebarTrigger className="mt-1 shrink-0" aria-label="Toggle student workspace" />
-                  <div>
-                    <h1 className="mb-2 text-3xl font-bold text-gray-900">
-                      {searchQuery ? `Search results for "${searchQuery}"` : `${branch ? `${branch} · ` : ''}Semester ${romanSemester(semester ?? 1)} Dashboard`}
-                    </h1>
-                    <p className="text-gray-600">
-                      {searchQuery
-                        ? `Found ${totalResults} result(s) in this semester`
-                        : "Here's what's happening with your studies today."}
-                    </p>
-                  </div>
+                  {searchQuery ? (
+                    <div>
+                      <h1 className="mb-2 text-3xl font-bold text-gray-900">
+                        {`Search results for "${searchQuery}"`}
+                      </h1>
+                      <p className="text-gray-600">Found {totalResults} result(s) in this semester</p>
+                    </div>
+                  ) : (
+                    <div className="min-w-0 flex-1 space-y-4">
+                      <div className="portal-active-surface relative overflow-hidden rounded-2xl px-6 py-6 text-white shadow-lg">
+                        <span className="pointer-events-none absolute -right-10 -top-14 h-44 w-44 rounded-full bg-white/10 blur-2xl" />
+                        <span className="pointer-events-none absolute -bottom-16 left-1/3 h-40 w-40 rounded-full bg-[hsl(var(--portal-cyan)/0.25)] blur-2xl" />
+                        <div className="relative">
+                          <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider">
+                            <GraduationCap className="h-3.5 w-3.5" />
+                            B.Tech {branch ?? ''} · Semester {romanSemester(semester ?? 1)} Active
+                          </span>
+                          <h1 className="mt-3 text-2xl font-bold sm:text-3xl">
+                            Welcome back, {profile.name} <span aria-hidden="true">👋</span>
+                          </h1>
+                          <p className="mt-1.5 text-sm text-white/85">
+                            Roll No: {profile.studentId} · Chaitanya (Deemed to be University) · {subjects.length} Enrolled Courses
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                        <Card className="flex-row items-center gap-4 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--portal-soft-blue))] text-[hsl(var(--portal-blue-strong))]">
+                            <Hash className="h-5 w-5" />
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Roll Number</p>
+                            <p className="truncate text-sm font-semibold text-foreground">{profile.studentId}</p>
+                          </div>
+                        </Card>
+
+                        <Card className="flex-row items-center gap-4 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--portal-soft-blue))] text-[hsl(var(--portal-blue-strong))]">
+                            <Award className="h-5 w-5" />
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Program</p>
+                            <p className="text-sm font-semibold leading-snug text-foreground">{branchFullName}</p>
+                          </div>
+                        </Card>
+
+                        <Card className="flex-row items-center gap-4 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--portal-soft-blue))] text-[hsl(var(--portal-blue-strong))]">
+                            <GraduationCap className="h-5 w-5" />
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Academic Year</p>
+                            <p className="truncate text-sm font-semibold text-foreground">B.Tech {yearLabel} Year</p>
+                          </div>
+                        </Card>
+
+                        <Card className="flex-row items-center gap-4 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--portal-soft-cyan))] text-[hsl(var(--portal-cyan))]">
+                            <Calendar className="h-5 w-5" />
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Semester</p>
+                            <p className="truncate text-sm font-semibold text-foreground">Semester {romanSemester(semester ?? 1)} · Active</p>
+                          </div>
+                        </Card>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
           {searchQuery && documentResults.length > 0 && (
