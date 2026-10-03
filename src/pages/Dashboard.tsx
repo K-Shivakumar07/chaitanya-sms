@@ -60,10 +60,12 @@ const Dashboard = () => {
 
   return (
     <SemesterGuard>
-      <SidebarProvider>
-        <div className="min-h-screen bg-gray-50">
-          <Header />
-          <div className="flex min-h-[calc(100vh-4rem)] w-full">
+      <SidebarProvider className="h-screen min-h-0 overflow-hidden">
+        <div className="flex h-screen min-h-0 w-full flex-col overflow-hidden bg-gray-50">
+          <div className="relative z-20 shrink-0">
+            <Header />
+          </div>
+          <div className="flex min-h-0 w-full flex-1 overflow-hidden">
             <PortalSidebar
               label="Student workspace"
               items={studentNavigation}
@@ -72,7 +74,7 @@ const Dashboard = () => {
               studentStyle
             />
 
-            <main className="min-w-0 flex-1 px-4 py-8 sm:px-6 lg:px-8">
+            <main className="min-w-0 flex-1 overflow-y-auto overscroll-contain px-4 py-8 sm:px-6 lg:px-8">
               <div className="mx-auto max-w-7xl">
                 <div className="mb-8 flex items-start gap-3">
                   <SidebarTrigger className="mt-1 shrink-0" aria-label="Toggle student workspace" />
