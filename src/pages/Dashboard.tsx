@@ -79,16 +79,75 @@ const Dashboard = () => {
               <div className="mx-auto max-w-7xl">
                 <div className="mb-8 flex items-start gap-3">
                   <SidebarTrigger className="mt-1 shrink-0" aria-label="Toggle student workspace" />
-                  <div>
-                    <h1 className="mb-2 text-3xl font-bold text-gray-900">
-                      {searchQuery ? `Search results for "${searchQuery}"` : `${branch ? `${branch} · ` : ''}Semester ${romanSemester(semester ?? 1)} Dashboard`}
-                    </h1>
-                    <p className="text-gray-600">
-                      {searchQuery
-                        ? `Found ${totalResults} result(s) in this semester`
-                        : "Here's what's happening with your studies today."}
-                    </p>
-                  </div>
+                  {searchQuery ? (
+                    <div>
+                      <h1 className="mb-2 text-3xl font-bold text-gray-900">
+                        {`Search results for "${searchQuery}"`}
+                      </h1>
+                      <p className="text-gray-600">Found {totalResults} result(s) in this semester</p>
+                    </div>
+                  ) : (
+                    <div className="min-w-0 flex-1 space-y-4">
+                      <div className="portal-active-surface relative overflow-hidden rounded-2xl px-6 py-6 text-white shadow-lg">
+                        <span className="pointer-events-none absolute -right-10 -top-14 h-44 w-44 rounded-full bg-white/10 blur-2xl" />
+                        <span className="pointer-events-none absolute -bottom-16 left-1/3 h-40 w-40 rounded-full bg-[hsl(var(--portal-cyan)/0.25)] blur-2xl" />
+                        <div className="relative">
+                          <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider">
+                            <GraduationCap className="h-3.5 w-3.5" />
+                            B.Tech {branch ?? ''} · Semester {romanSemester(semester ?? 1)} Active
+                          </span>
+                          <h1 className="mt-3 text-2xl font-bold sm:text-3xl">
+                            Welcome back, {profile.name} <span aria-hidden="true">👋</span>
+                          </h1>
+                          <p className="mt-1.5 text-sm text-white/85">
+                            Roll No: {profile.studentId} · Chaitanya (Deemed to be University) · {subjects.length} Enrolled Courses
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                        <Card className="flex-row items-center gap-4 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--portal-soft-blue))] text-[hsl(var(--portal-blue-strong))]">
+                            <Hash className="h-5 w-5" />
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Roll Number</p>
+                            <p className="truncate text-sm font-semibold text-foreground">{profile.studentId}</p>
+                          </div>
+                        </Card>
+
+                        <Card className="flex-row items-center gap-4 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--portal-soft-blue))] text-[hsl(var(--portal-blue-strong))]">
+                            <Award className="h-5 w-5" />
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Program</p>
+                            <p className="truncate text-sm font-semibold text-foreground">{branchFullName}</p>
+                          </div>
+                        </Card>
+
+                        <Card className="flex-row items-center gap-4 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--portal-soft-blue))] text-[hsl(var(--portal-blue-strong))]">
+                            <GraduationCap className="h-5 w-5" />
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Academic Year</p>
+                            <p className="truncate text-sm font-semibold text-foreground">B.Tech {yearLabel} Year</p>
+                          </div>
+                        </Card>
+
+                        <Card className="flex-row items-center gap-4 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--portal-soft-cyan))] text-[hsl(var(--portal-cyan))]">
+                            <Calendar className="h-5 w-5" />
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Semester</p>
+                            <p className="truncate text-sm font-semibold text-foreground">Semester {romanSemester(semester ?? 1)} · Active</p>
+                          </div>
+                        </Card>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
           {searchQuery && documentResults.length > 0 && (
