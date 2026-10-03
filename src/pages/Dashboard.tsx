@@ -40,9 +40,24 @@ const studentNavigation: PortalNavItem[] = [
 
 const Dashboard = () => {
   const { semester, branch } = useSemester();
+  const { profile } = useStudentProfile();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('search');
+  const { data: subjectsData } = useSubjects();
+  const subjects = subjectsData ?? [];
+
+  const branchFullName =
+    ({
+      'CSE(DS)': 'Computer Science & Engineering (Data Science)',
+      CSE: 'Computer Science & Engineering',
+      'AI&ML': 'Computer Science & Engineering (AI&ML)',
+      ECE: 'Electronics & Communication Engineering',
+      EEE: 'Electrical & Electronics Engineering',
+      MECH: 'Mechanical Engineering',
+      CIVIL: 'Civil Engineering',
+    } as Record<string, string>)[branch ?? ''] ?? branch ?? 'B.Tech Program';
+  const yearLabel = ['1st', '2nd', '3rd', '4th'][Math.ceil((semester ?? 1) / 2) - 1] ?? '1st';
 
   const { data: materials } = useMaterials();
   const { data: notes } = useNotes();
