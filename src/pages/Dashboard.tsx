@@ -137,7 +137,7 @@ const Dashboard = () => {
                           </span>
                           <div className="min-w-0">
                             <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Program</p>
-                            <p className="truncate text-sm font-semibold text-foreground">{branchFullName}</p>
+                            <p className="text-sm font-semibold leading-snug text-foreground">{branchFullName}</p>
                           </div>
                         </Card>
 
