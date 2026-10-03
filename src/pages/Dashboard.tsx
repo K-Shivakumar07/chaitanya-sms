@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Book, Calendar, FileText, Download, Bell, BookOpen, UserCheck, LayoutDashboard, User } from 'lucide-react';
+import { Book, Calendar, FileText, Download, Bell, BookOpen, UserCheck, LayoutDashboard, User, GraduationCap, Hash, Award } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
@@ -8,12 +8,13 @@ import QuickStats from '@/components/QuickStats';
 import RecentActivity from '@/components/RecentActivity';
 import SemesterGuard from '@/components/SemesterGuard';
 import { useSemester, romanSemester } from '@/context/SemesterContext';
-import { useMaterials, useNotes, useAssignments } from '@/hooks/useSemesterData';
+import { useMaterials, useNotes, useAssignments, useSubjects } from '@/hooks/useSemesterData';
 import { buildDocumentIndex, searchDocuments } from '@/data/documents';
 import { useSearchParams } from 'react-router-dom';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import PortalSidebar, { type PortalNavItem } from '@/components/PortalSidebar';
 import { useNavigate } from 'react-router-dom';
+import { useStudentProfile } from '@/hooks/useStudentProfile';
 
 const features = [
   { title: 'Syllabus', description: 'Unit-wise curriculum for every subject', icon: BookOpen, link: '/syllabus', color: 'bg-blue-500' },
