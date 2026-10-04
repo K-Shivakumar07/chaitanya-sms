@@ -12,7 +12,6 @@ import {
   Suggestion,
 } from '@/data/documents';
 import { useMaterials, useNotes, useAssignments } from '@/hooks/useSemesterData';
-import { useSemester } from '@/context/SemesterContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useStudentProfile, initials } from '@/hooks/useStudentProfile';
 
@@ -60,7 +59,6 @@ const Header = () => {
   const [sectionResults, setSectionResults] = useState<typeof sectionSuggestions>([]);
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { semester } = useSemester();
   const { profile } = useStudentProfile();
 
   const { data: materials } = useMaterials();

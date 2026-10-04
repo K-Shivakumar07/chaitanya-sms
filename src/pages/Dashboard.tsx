@@ -7,7 +7,7 @@ import Header from '@/components/Header';
 import QuickStats from '@/components/QuickStats';
 import RecentActivity from '@/components/RecentActivity';
 import SemesterGuard from '@/components/SemesterGuard';
-import { useSemester, romanSemester } from '@/context/SemesterContext';
+import { useSemester } from '@/context/SemesterContext';
 import { useMaterials, useNotes, useAssignments } from '@/hooks/useSemesterData';
 import { buildDocumentIndex, searchDocuments } from '@/data/documents';
 import { useSearchParams } from 'react-router-dom';
@@ -104,11 +104,11 @@ const Dashboard = () => {
                     <div className="min-w-0 flex-1">
                       <div className="portal-active-surface relative overflow-hidden rounded-2xl px-6 py-7 text-primary-foreground shadow-lg sm:px-8">
                         <div className="relative">
-                          <p className="text-xs font-bold uppercase sm:text-sm">
-                            B.Tech {yearLabel} Year <span aria-hidden="true">•</span> {semester ?? 1} Semester
+                          <p className="text-xs font-bold sm:text-sm">
+                            B.TECH {yearLabel} Year <span aria-hidden="true">•</span> {semester ?? 1} SEMESTER
                           </p>
                           <h1 className="mt-2 text-2xl font-bold sm:text-3xl">
-                            Welcome back, {profile.name} <span aria-hidden="true">👋</span>
+                            Welcome back, {profile.name}
                           </h1>
                           <p className="mt-2 text-sm text-primary-foreground/85 sm:text-base">
                             Roll No: {profile.studentId} <span aria-hidden="true">•</span> {branchFullName}
