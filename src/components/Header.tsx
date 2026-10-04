@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Search, FileText, Book, ClipboardList, Tag, CornerDownLeft, GraduationCap } from 'lucide-react';
+import { User, Search, FileText, Book, ClipboardList, Tag, CornerDownLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import NotificationsBell from '@/components/NotificationsBell';
@@ -12,7 +12,7 @@ import {
   Suggestion,
 } from '@/data/documents';
 import { useMaterials, useNotes, useAssignments } from '@/hooks/useSemesterData';
-import { useSemester, romanSemester } from '@/context/SemesterContext';
+import { useSemester } from '@/context/SemesterContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useStudentProfile, initials } from '@/hooks/useStudentProfile';
 
@@ -60,7 +60,7 @@ const Header = () => {
   const [sectionResults, setSectionResults] = useState<typeof sectionSuggestions>([]);
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { semester, branch } = useSemester();
+  const { semester } = useSemester();
   const { profile } = useStudentProfile();
 
   const { data: materials } = useMaterials();
@@ -165,10 +165,10 @@ const Header = () => {
 
   return (
     <header className="bg-white shadow-sm border-b">
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <Link to="/dashboard" className="flex items-center space-x-3">
-            <div className="h-12 w-auto">
+            <div className="h-14 w-auto sm:h-16">
               <img
                 src="/lovable-uploads/63f128ca-12f8-480a-9026-c6299e38a2c2.png"
                 alt="Chaitanya College Logo"
@@ -294,15 +294,6 @@ const Header = () => {
           </div>
 
           <div className="flex items-center space-x-2 md:space-x-4">
-            {semester && (
-              <Link to="/student">
-                <Button variant="outline" size="sm" className="hidden sm:inline-flex">
-                  <GraduationCap className="w-4 h-4 mr-2" />
-                  {branch ? `${branch} · ` : ''}Sem {romanSemester(semester)} · Change
-                </Button>
-              </Link>
-            )}
-
             <NotificationsBell />
 
             <Link to="/profile">
