@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Book, Calendar, FileText, Download, Bell, BookOpen, UserCheck, LayoutDashboard, User, GraduationCap, Hash, Award } from 'lucide-react';
+import { Book, Calendar, FileText, Download, Bell, BookOpen, UserCheck, LayoutDashboard, User, CreditCard } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
 import QuickStats from '@/components/QuickStats';
 import RecentActivity from '@/components/RecentActivity';
 import SemesterGuard from '@/components/SemesterGuard';
-import { useSemester, romanSemester } from '@/context/SemesterContext';
-import { useMaterials, useNotes, useAssignments, useSubjects } from '@/hooks/useSemesterData';
+import { useSemester } from '@/context/SemesterContext';
+import { useMaterials, useNotes, useAssignments } from '@/hooks/useSemesterData';
 import { buildDocumentIndex, searchDocuments } from '@/data/documents';
 import { useSearchParams } from 'react-router-dom';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
@@ -23,7 +23,8 @@ const features = [
   { title: 'Notes & PDFs', description: 'Download subject notes', icon: FileText, link: '/notes', color: 'bg-orange-500' },
   { title: 'Assignments', description: 'Pending and completed assignments', icon: Download, link: '/assignments', color: 'bg-red-500' },
   { title: 'Announcements', description: 'Notices from the department', icon: Bell, link: '/announcements', color: 'bg-yellow-500' },
-  { title: 'Attendance', description: 'View your attendance record', icon: UserCheck, link: '/attendance', color: 'bg-teal-500' },
+  { title: 'View Attendance', description: 'View your attendance record', icon: UserCheck, link: '/attendance', color: 'bg-teal-500' },
+  { title: 'Online Fee Payment', description: 'Pay your college fees online', icon: CreditCard, link: 'http://cpg.chaitanya.edu.in/', color: 'bg-blue-500', external: true },
 ];
 
 const studentNavigation: PortalNavItem[] = [
@@ -34,7 +35,8 @@ const studentNavigation: PortalNavItem[] = [
   { key: '/notes', title: 'Notes & PDFs', icon: FileText },
   { key: '/assignments', title: 'Assignments', icon: Download },
   { key: '/announcements', title: 'Announcements', icon: Bell },
-  { key: '/attendance', title: 'Attendance', icon: UserCheck },
+  { key: '/attendance', title: 'View Attendance', icon: UserCheck },
+  { key: 'http://cpg.chaitanya.edu.in/', title: 'Online Fee Payment', icon: CreditCard },
   { key: '/profile', title: 'Profile', icon: User },
 ];
 
@@ -44,9 +46,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('search');
-  const { data: subjectsData } = useSubjects();
-  const subjects = subjectsData ?? [];
-
   const branchFullName =
     ({
       'CSE(DS)': 'Computer Science & Engineering (Data Science)',
@@ -93,7 +92,7 @@ const Dashboard = () => {
             <main className="min-w-0 flex-1 overflow-y-auto overscroll-contain px-4 py-8 sm:px-6 lg:px-8">
               <div className="mx-auto max-w-7xl">
                 <div className="mb-8 flex items-start gap-3">
-                  <SidebarTrigger className="mt-1 shrink-0" aria-label="Toggle student workspace" />
+                  <SidebarTrigger className="mt-1 shrink-0 md:hidden" aria-label="Open student workspace" />
                   {searchQuery ? (
                     <div>
                       <h1 className="mb-2 text-3xl font-bold text-gray-900">
@@ -102,64 +101,19 @@ const Dashboard = () => {
                       <p className="text-gray-600">Found {totalResults} result(s) in this semester</p>
                     </div>
                   ) : (
-                    <div className="min-w-0 flex-1 space-y-4">
-                      <div className="portal-active-surface relative overflow-hidden rounded-2xl px-6 py-6 text-white shadow-lg">
-                        <span className="pointer-events-none absolute -right-10 -top-14 h-44 w-44 rounded-full bg-white/10 blur-2xl" />
-                        <span className="pointer-events-none absolute -bottom-16 left-1/3 h-40 w-40 rounded-full bg-[hsl(var(--portal-cyan)/0.25)] blur-2xl" />
+                    <div className="min-w-0 flex-1">
+                      <div className="portal-active-surface relative overflow-hidden rounded-2xl px-6 py-7 text-primary-foreground shadow-lg sm:px-8">
                         <div className="relative">
-                          <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider">
-                            <GraduationCap className="h-3.5 w-3.5" />
-                            B.Tech {branch ?? ''} · Semester {romanSemester(semester ?? 1)} Active
-                          </span>
-                          <h1 className="mt-3 text-2xl font-bold sm:text-3xl">
-                            Welcome back, {profile.name} <span aria-hidden="true">👋</span>
+                          <p className="text-xs font-bold sm:text-sm">
+                            B.TECH {yearLabel} Year <span aria-hidden="true">•</span> {semester ?? 1} SEMESTER
+                          </p>
+                          <h1 className="mt-2 text-2xl font-bold sm:text-3xl">
+                            Welcome back, {profile.name}
                           </h1>
-                          <p className="mt-1.5 text-sm text-white/85">
-                            Roll No: {profile.studentId} · Chaitanya (Deemed to be University) · {subjects.length} Enrolled Courses
+                          <p className="mt-2 text-sm text-primary-foreground/85 sm:text-base">
+                            Roll No: {profile.studentId} <span aria-hidden="true">•</span> {branchFullName}
                           </p>
                         </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                        <Card className="flex-row items-center gap-4 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--portal-soft-blue))] text-[hsl(var(--portal-blue-strong))]">
-                            <Hash className="h-5 w-5" />
-                          </span>
-                          <div className="min-w-0">
-                            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Roll Number</p>
-                            <p className="truncate text-sm font-semibold text-foreground">{profile.studentId}</p>
-                          </div>
-                        </Card>
-
-                        <Card className="flex-row items-center gap-4 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--portal-soft-blue))] text-[hsl(var(--portal-blue-strong))]">
-                            <Award className="h-5 w-5" />
-                          </span>
-                          <div className="min-w-0">
-                            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Program</p>
-                            <p className="text-sm font-semibold leading-snug text-foreground">{branchFullName}</p>
-                          </div>
-                        </Card>
-
-                        <Card className="flex-row items-center gap-4 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--portal-soft-blue))] text-[hsl(var(--portal-blue-strong))]">
-                            <GraduationCap className="h-5 w-5" />
-                          </span>
-                          <div className="min-w-0">
-                            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Academic Year</p>
-                            <p className="truncate text-sm font-semibold text-foreground">B.Tech {yearLabel} Year</p>
-                          </div>
-                        </Card>
-
-                        <Card className="flex-row items-center gap-4 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--portal-soft-cyan))] text-[hsl(var(--portal-cyan))]">
-                            <Calendar className="h-5 w-5" />
-                          </span>
-                          <div className="min-w-0">
-                            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Semester</p>
-                            <p className="truncate text-sm font-semibold text-foreground">Semester {romanSemester(semester ?? 1)} · Active</p>
-                          </div>
-                        </Card>
                       </div>
                     </div>
                   )}
@@ -217,7 +171,11 @@ const Dashboard = () => {
                 </Card>
               );
 
-              return (
+              return feature.external ? (
+                <a key={index} href={feature.link} target="_blank" rel="noopener noreferrer" className="group">
+                  {card}
+                </a>
+              ) : (
                 <Link key={index} to={feature.link} className="group">
                   {card}
                 </Link>

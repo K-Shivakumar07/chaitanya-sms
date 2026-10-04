@@ -39,30 +39,34 @@ const PortalSidebar = ({ label, items, activeKey, onSelect, studentStyle = false
   const collapsed = state === 'collapsed' && !isMobile;
 
   const select = (key: string) => {
-    onSelect(key);
+    if (key.startsWith('http://') || key.startsWith('https://')) {
+      window.open(key, '_blank', 'noopener,noreferrer');
+    } else {
+      onSelect(key);
+    }
     if (isMobile) setOpenMobile(false);
   };
 
   return (
     <Sidebar
-      collapsible="icon"
+      collapsible={studentStyle ? 'offcanvas' : 'icon'}
       desktopHeaderOffset={studentStyle}
       className={studentStyle ? 'student-portal-sidebar' : undefined}
     >
-      <SidebarContent className={studentStyle ? 'px-2 py-4' : undefined}>
+      <SidebarContent className={studentStyle ? 'overflow-hidden px-2 py-3' : undefined}>
         <SidebarGroup className={studentStyle ? 'p-0' : undefined}>
           <SidebarGroupLabel className={studentStyle ? 'mb-2 px-3 text-[11px] font-semibold uppercase text-sidebar-foreground/60' : undefined}>
             {studentStyle ? 'Student workspace' : label}
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className={studentStyle ? 'gap-2' : undefined}>
+            <SidebarMenu className={studentStyle ? 'gap-1' : undefined}>
               {items.map((item) => (
                 <SidebarMenuItem key={item.key}>
                   <SidebarMenuButton
                     isActive={activeKey === item.key}
                     tooltip={item.title}
                     size={studentStyle ? 'lg' : 'default'}
-                    className={studentStyle ? 'h-12 gap-3 rounded-md px-3 text-[15px] font-semibold data-[active=true]:shadow-sm [&>svg]:h-5 [&>svg]:w-5' : undefined}
+                    className={studentStyle ? 'h-10 gap-3 rounded-md px-3 text-sm font-semibold data-[active=true]:shadow-sm [&>svg]:h-5 [&>svg]:w-5' : undefined}
                     onClick={() => select(item.key)}
                   >
                     <item.icon className="h-4 w-4" />
