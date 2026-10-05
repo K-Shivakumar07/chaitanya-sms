@@ -9,7 +9,7 @@
 [![AI](https://img.shields.io/badge/AI-RAG%20%2B%20Ollama-purple)]()
 [![License](https://img.shields.io/badge/License-MIT-green)]()
 
-<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/05c44140-6413-42d8-8990-6d6021786a16" />
+<img width="1536" height="1024" alt="image" src="https://github.com/K-Shivakumar07/chaitanya-sms/blob/main/Dashboard%20Image.png?raw=true" />
 
 
 
