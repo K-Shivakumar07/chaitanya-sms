@@ -12,7 +12,7 @@ import {
 import { romanSemester } from '@/context/SemesterContext';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import PortalSidebar, { type PortalNavItem } from '@/components/PortalSidebar';
-import universityLogo from '@/assets/chaitanya-university-logo.png.asset.json';
+import universityLogo from '@/assets/chaitanya-university-logo.webp';
 
 interface StaffShellProps {
   title: string;
@@ -44,7 +44,7 @@ const StaffShell = ({
         <div className="flex items-center gap-3">
           <SidebarTrigger className="md:hidden" aria-label="Open portal menu" />
           <img
-            src={universityLogo.url}
+            src={universityLogo}
             alt="Chaitanya (Deemed to be University)"
             className="h-14 w-auto object-contain sm:h-16"
           />
