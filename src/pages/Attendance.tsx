@@ -7,11 +7,21 @@ import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
 import SemesterGuard from '@/components/SemesterGuard';
 import { useAttendance } from '@/hooks/useSemesterData';
+import { useStudentProfile } from '@/hooks/useStudentProfile';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 const percent = (a: number, h: number) => (h ? Math.round((a / h) * 100) : 0);
 
 const Attendance = () => {
-  const { data, isLoading } = useAttendance();
+  const { profile } = useStudentProfile();
+  const { data, isLoading, isError } = useAttendance(profile.studentId);
   const rows = data ?? [];
 
   return (
@@ -27,8 +37,8 @@ const Attendance = () => {
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Attendance</h1>
-              <p className="text-gray-600">Attendance marks entered by your faculty</p>
+              <h1 className="text-3xl font-bold text-gray-900">View Attendance</h1>
+              <p className="text-gray-600">Attendance records for {profile.studentId}</p>
             </div>
             <a
               href="http://www.chaitanya.net.in/cgcstudent/hyd/index.php"
@@ -45,38 +55,52 @@ const Attendance = () => {
 
           {isLoading ? (
             <p className="text-gray-500">Loading attendance…</p>
+          ) : isError ? (
+            <div className="py-12 text-center">
+              <p className="text-destructive">Attendance records could not be loaded. Please try again.</p>
+            </div>
           ) : rows.length === 0 ? (
             <div className="text-center py-12">
               <UserCheck className="w-14 h-14 text-gray-300 mx-auto mb-3" />
               <p className="text-gray-500">No attendance has been uploaded yet.</p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {rows.map((r) => {
-                const p = percent(r.classes_attended, r.classes_held);
-                return (
-                  <Card key={r.id}>
-                    <CardContent className="p-5 flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <p className="font-semibold text-gray-900">
-                          {r.roll_no} • {r.student_name}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {r.subject_name} • {r.period}
-                        </p>
-                        {r.remarks && <p className="text-xs text-gray-500 mt-1">{r.remarks}</p>}
-                      </div>
-                      <div className="text-right">
-                        <Badge variant={p >= 75 ? 'default' : 'destructive'}>{p}%</Badge>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {r.classes_attended} / {r.classes_held} classes
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+            <Card className="overflow-hidden">
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Subject</TableHead>
+                      <TableHead>Period</TableHead>
+                      <TableHead className="text-center">Held</TableHead>
+                      <TableHead className="text-center">Attended</TableHead>
+                      <TableHead className="text-right">Attendance</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {rows.map((record) => {
+                      const attendancePercent = percent(record.classes_attended, record.classes_held);
+                      return (
+                        <TableRow key={record.id}>
+                          <TableCell>
+                            <p className="font-semibold text-foreground">{record.subject_name}</p>
+                            {record.remarks && <p className="mt-1 text-xs text-muted-foreground">{record.remarks}</p>}
+                          </TableCell>
+                          <TableCell>{record.period}</TableCell>
+                          <TableCell className="text-center">{record.classes_held}</TableCell>
+                          <TableCell className="text-center">{record.classes_attended}</TableCell>
+                          <TableCell className="text-right">
+                            <Badge variant={attendancePercent >= 75 ? 'default' : 'destructive'}>
+                              {attendancePercent}%
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           )}
         </main>
       </div>
