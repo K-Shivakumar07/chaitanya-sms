@@ -291,17 +291,18 @@ export interface AttendanceRow {
   remarks: string | null;
 }
 
-export const useAttendance = () => {
+export const useAttendance = (rollNo?: string) => {
   const { semester } = useSemester();
   return useQuery({
-    queryKey: ['attendance_records', enabledKey(semester)],
-    enabled: !!semester,
+    queryKey: ['attendance_records', enabledKey(semester), rollNo ?? ''],
+    enabled: !!semester && !!rollNo,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('attendance_records')
         .select('*')
         .eq('semester', semester!)
-        .order('roll_no');
+        .eq('roll_no', rollNo ?? '')
+        .order('subject_name');
       if (error) throw error;
       return (data ?? []) as AttendanceRow[];
     },

@@ -12,6 +12,7 @@ import {
 import { romanSemester } from '@/context/SemesterContext';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import PortalSidebar, { type PortalNavItem } from '@/components/PortalSidebar';
+import universityLogo from '@/assets/chaitanya-university-logo.webp';
 
 interface StaffShellProps {
   title: string;
@@ -36,18 +37,16 @@ const StaffShell = ({
   activeTab = '',
   onTabChange = () => {},
 }: StaffShellProps) => (
-  <SidebarProvider>
-  <div className="flex min-h-screen w-full bg-background">
-    <PortalSidebar label={title} items={navItems} activeKey={activeTab} onSelect={(k) => { onTabChange(k); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
-    <div className="flex min-w-0 flex-1 flex-col">
-    <header className="sticky top-0 z-40 border-b border-border bg-card shadow-sm">
+  <SidebarProvider className="h-screen min-h-0 overflow-hidden">
+  <div className="flex h-screen min-h-0 w-full flex-col overflow-hidden bg-background">
+    <header className="relative z-40 shrink-0 border-b border-border bg-card shadow-sm">
       <div className="container mx-auto flex flex-wrap items-center justify-between gap-4 px-4 py-3">
         <div className="flex items-center gap-3">
-          <SidebarTrigger aria-label="Toggle menu" />
+          <SidebarTrigger className="md:hidden" aria-label="Open portal menu" />
           <img
-            src="/lovable-uploads/63f128ca-12f8-480a-9026-c6299e38a2c2.png"
-            alt="Chaitanya College Logo"
-            className="h-11 w-auto object-contain"
+            src={universityLogo}
+            alt="Chaitanya (Deemed to be University)"
+            className="h-14 w-auto object-contain sm:h-16"
           />
           <div className="hidden sm:block">
             <p className="font-semibold leading-tight text-foreground">{title}</p>
@@ -78,7 +77,17 @@ const StaffShell = ({
         </div>
       </div>
     </header>
-    <main className="container mx-auto px-4 py-8">{children}</main>
+    <div className="flex min-h-0 w-full flex-1 overflow-hidden">
+      <PortalSidebar
+        label={title}
+        items={navItems}
+        activeKey={activeTab}
+        onSelect={(key) => onTabChange(key)}
+        simplifiedStyle
+      />
+      <main className="min-w-0 flex-1 overflow-y-auto overscroll-contain px-4 py-8">
+        <div className="container mx-auto">{children}</div>
+      </main>
     </div>
   </div>
   </SidebarProvider>

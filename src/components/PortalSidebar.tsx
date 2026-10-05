@@ -30,13 +30,15 @@ interface PortalSidebarProps {
   activeKey: string;
   onSelect: (key: string) => void;
   studentStyle?: boolean;
+  simplifiedStyle?: boolean;
 }
 
-const PortalSidebar = ({ label, items, activeKey, onSelect, studentStyle = false }: PortalSidebarProps) => {
+const PortalSidebar = ({ label, items, activeKey, onSelect, studentStyle = false, simplifiedStyle = false }: PortalSidebarProps) => {
   const { isMobile, setOpenMobile, state } = useSidebar();
   const { profile } = useStudentProfile();
   const { branch, semester } = useSemester();
   const collapsed = state === 'collapsed' && !isMobile;
+  const streamlined = studentStyle || simplifiedStyle;
 
   const select = (key: string) => {
     if (key.startsWith('http://') || key.startsWith('https://')) {
@@ -49,24 +51,24 @@ const PortalSidebar = ({ label, items, activeKey, onSelect, studentStyle = false
 
   return (
     <Sidebar
-      collapsible={studentStyle ? 'offcanvas' : 'icon'}
-      desktopHeaderOffset={studentStyle}
-      className={studentStyle ? 'student-portal-sidebar' : undefined}
+      collapsible={streamlined ? 'offcanvas' : 'icon'}
+      desktopHeaderOffset={streamlined}
+      className={streamlined ? 'student-portal-sidebar' : undefined}
     >
-      <SidebarContent className={studentStyle ? 'overflow-hidden px-2 py-3' : undefined}>
-        <SidebarGroup className={studentStyle ? 'p-0' : undefined}>
-          <SidebarGroupLabel className={studentStyle ? 'mb-2 px-3 text-[11px] font-semibold uppercase text-sidebar-foreground/60' : undefined}>
+      <SidebarContent className={streamlined ? 'overflow-hidden px-2 py-3' : undefined}>
+        <SidebarGroup className={streamlined ? 'p-0' : undefined}>
+          <SidebarGroupLabel className={streamlined ? 'mb-2 px-3 text-[11px] font-semibold uppercase text-sidebar-foreground/60' : undefined}>
             {studentStyle ? 'Student workspace' : label}
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className={studentStyle ? 'gap-1' : undefined}>
+            <SidebarMenu className={streamlined ? 'gap-1' : undefined}>
               {items.map((item) => (
                 <SidebarMenuItem key={item.key}>
                   <SidebarMenuButton
                     isActive={activeKey === item.key}
                     tooltip={item.title}
-                    size={studentStyle ? 'lg' : 'default'}
-                    className={studentStyle ? 'h-10 gap-3 rounded-md px-3 text-sm font-semibold data-[active=true]:shadow-sm [&>svg]:h-5 [&>svg]:w-5' : undefined}
+                    size={streamlined ? 'lg' : 'default'}
+                    className={streamlined ? 'h-10 gap-3 rounded-md px-3 text-sm font-semibold data-[active=true]:shadow-sm [&>svg]:h-5 [&>svg]:w-5' : undefined}
                     onClick={() => select(item.key)}
                   >
                     <item.icon className="h-4 w-4" />

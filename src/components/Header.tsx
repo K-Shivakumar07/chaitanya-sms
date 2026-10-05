@@ -14,6 +14,7 @@ import {
 import { useMaterials, useNotes, useAssignments } from '@/hooks/useSemesterData';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useStudentProfile, initials } from '@/hooks/useStudentProfile';
+import universityLogo from '@/assets/chaitanya-university-logo.webp';
 
 const sectionSuggestions = [
   { title: 'Study Materials', link: '/materials' },
@@ -168,8 +169,8 @@ const Header = () => {
           <Link to="/dashboard" className="flex items-center space-x-3">
             <div className="h-14 w-auto sm:h-16">
               <img
-                src="/lovable-uploads/63f128ca-12f8-480a-9026-c6299e38a2c2.png"
-                alt="Chaitanya College Logo"
+                src={universityLogo}
+                alt="Chaitanya (Deemed to be University)"
                 className="h-full w-auto object-contain"
               />
             </div>

@@ -8,3 +8,6 @@
 - [x] Consolidate student details into the dashboard welcome card.
 - [x] Simplify the student sidebar and header controls.
 - [x] Add Online Fee Payment and rename attendance.
+- [x] Replace portal branding with the official university logo.
+- [x] Apply the fixed header and simplified sidebar to staff portals.
+- [x] Show real semester and roll-number attendance records in a table.
