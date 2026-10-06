@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Send, FileText, Bot } from 'lucide-react';
+import { Send, FileText, Bot, Download } from 'lucide-react';
+import { toast } from 'sonner';
+import { downloadCourseFile } from '@/lib/files';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { buildDocumentIndex, searchDocuments, SearchResult } from '@/data/documents';
+import { buildDocumentIndex, findResources, SearchResult } from '@/data/documents';
 import { useMaterials, useNotes, useAssignments } from '@/hooks/useSemesterData';
 import { useSemester, romanSemester } from '@/context/SemesterContext';
 
@@ -13,6 +15,8 @@ const QUICK_ASKS = [
   'Pending assignments',
   'Upcoming deadlines',
   'Latest announcements',
+  'All study materials',
+  'All notes',
 ];
 
 interface ChatMessage {
@@ -71,7 +75,7 @@ const AssistantChat = ({ onNavigate, initialQuery, className = '' }: Props) => {
     setQuery('');
     setTyping(true);
 
-    const docs = searchDocuments(buildDocumentIndex(materials, notes, assignments), q).slice(0, 4);
+    const docs = findResources(buildDocumentIndex(materials, notes, assignments), q);
     historyRef.current = [...historyRef.current, { role: 'user', content: q }];
 
     const botId = nextId();
@@ -206,20 +210,32 @@ const AssistantChat = ({ onNavigate, initialQuery, className = '' }: Props) => {
               {m.docs && (
                 <div className="mt-2 space-y-2">
                   {m.docs.map((doc, i) => (
-                    <Link
-                      key={i}
-                      to={doc.link}
-                      onClick={onNavigate}
-                      className="flex items-start gap-2 rounded-xl border bg-white p-2 hover:bg-blue-50 transition-colors"
-                    >
+                    <div key={i} className="flex items-start gap-2 rounded-xl border bg-white p-2">
                       <FileText className="w-4 h-4 mt-0.5 text-blue-600 shrink-0" />
-                      <span className="flex-1">
+                      <Link to={doc.link} onClick={onNavigate} className="flex-1 min-w-0 hover:underline">
                         <span className="block text-sm font-medium text-gray-900">{doc.title}</span>
                         <span className="block text-xs text-gray-500">
                           {doc.kindLabel} • {doc.subject} • {doc.meta}
                         </span>
-                      </span>
-                    </Link>
+                      </Link>
+                      {doc.kind !== 'assignment' && (
+                        doc.fileUrl ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 shrink-0 px-2 text-xs"
+                            onClick={async () => {
+                              try { await downloadCourseFile(doc.fileUrl!); }
+                              catch { toast.error('Could not open this file.'); }
+                            }}
+                          >
+                            <Download className="mr-1 h-3 w-3" /> Open
+                          </Button>
+                        ) : (
+                          <span className="shrink-0 text-[10px] text-gray-400">No file</span>
+                        )
+                      )}
+                    </div>
                   ))}
                 </div>
               )}

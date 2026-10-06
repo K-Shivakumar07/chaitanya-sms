@@ -37,8 +37,8 @@ Deno.serve(async (req) => {
         supabase.from("subjects").select("code,name,short_name,faculty,credits,kind").eq("semester", semester),
         supabase.from("syllabus_units").select("unit_no,title,topics,hours,subject_id").eq("semester", semester).order("unit_no"),
         supabase.from("timetable_slots").select("day,day_order,start_time,end_time,subject_name,faculty,room,is_lab").eq("semester", semester).order("day_order").order("start_time"),
-        supabase.from("materials").select("title,subject_name,unit_no,file_type,size_label,uploaded_at,downloads,description").eq("semester", semester),
-        supabase.from("notes").select("title,subject_name,unit_no,faculty,file_type,pages,size_label,uploaded_at").eq("semester", semester),
+        supabase.from("materials").select("file_url,title,subject_name,unit_no,file_type,size_label,uploaded_at,downloads,description").eq("semester", semester),
+        supabase.from("notes").select("file_url,title,subject_name,unit_no,faculty,file_type,pages,size_label,uploaded_at").eq("semester", semester),
         supabase.from("assignments").select("title,subject_name,faculty,description,assigned_date,due_date,status,priority").eq("semester", semester).order("due_date"),
         supabase.from("announcements").select("title,body,category,posted_by,posted_at,semester").or(`semester.eq.${semester},semester.eq.0,semester.is.null`).order("posted_at", { ascending: false }).limit(30),
         supabase.from("deadlines").select("title,detail,category,due_date,urgent").eq("semester", semester).order("due_date"),
@@ -98,6 +98,7 @@ Rules:
 - For attendance questions, use the ATTENDANCE RECORDS data: report classes attended vs classes held, compute the percentage (attended/held*100, one decimal), and mention the subject, period and remarks. If asked about overall attendance, summarize per subject and give the overall percentage across all records.
 - Announcements and activity may include posts marked "All semesters" (posted by faculty or admin staff) — these apply to every student, so always include them when answering about announcements or recent updates, and mention who posted them (posted_by) when relevant.
 - The FACULTY DIRECTORY lists department staff with designation, email and phone; use it for questions about who teaches or how to contact staff.
+- When the student asks for a study material, note/PDF or assignment, list each matching item (title, subject, unit, type) and say the files are attached below your reply with an Open button. If file_url is null say no file is uploaded yet for that item. Never print raw file_url values.
 - If something is not in the data, say it is not available for this semester. Never invent data.
 
 === DASHBOARD SNAPSHOT (Semester ${semester}) ===
