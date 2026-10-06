@@ -40,7 +40,7 @@ const StaffShell = ({
   <SidebarProvider className="h-screen min-h-0 overflow-hidden">
   <div className="flex h-screen min-h-0 w-full flex-col overflow-hidden bg-background">
     <header className="relative z-40 shrink-0 border-b border-border bg-card shadow-sm">
-      <div className="container mx-auto flex flex-wrap items-center justify-between gap-4 px-4 py-3">
+      <div className="container mx-auto flex flex-wrap items-center justify-between gap-4 px-4 py-2">
         <div className="flex items-center gap-3">
           <SidebarTrigger className="md:hidden" aria-label="Open portal menu" />
           <img
@@ -68,11 +68,9 @@ const StaffShell = ({
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline" asChild className="shrink-0">
-            <Link to="/">
-              <ArrowLeft className="h-4 w-4 sm:mr-1" />
-              <span className="hidden sm:inline">Switch module</span>
-            </Link>
+          <Button variant="outline" className="shrink-0" onClick={handleSignOut}>
+            <LogOut className="h-4 w-4 sm:mr-1" />
+            <span className="hidden sm:inline">Sign out</span>
           </Button>
         </div>
       </div>

@@ -164,7 +164,7 @@ const Header = () => {
 
   return (
     <header className="bg-white shadow-sm border-b">
-      <div className="container mx-auto px-4 py-3">
+      <div className="container mx-auto px-4 py-2">
         <div className="flex items-center justify-between">
           <Link to="/dashboard" className="flex shrink-0 items-center space-x-3">
             <div className="h-16 w-52 sm:h-20 sm:w-72 lg:h-24 lg:w-[21rem]">
