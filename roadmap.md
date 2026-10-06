@@ -11,3 +11,5 @@
 - [x] Replace portal branding with the official university logo.
 - [x] Apply the fixed header and simplified sidebar to staff portals.
 - [x] Show real semester and roll-number attendance records in a table.
+- [x] Enlarge the official logo across all portal headers.
+- [x] Persist every editable student profile field and photo on the current device.

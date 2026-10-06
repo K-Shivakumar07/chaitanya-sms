@@ -46,9 +46,16 @@ const Profile = () => {
       toast({ title: 'Please enter your name', variant: 'destructive' });
       return;
     }
-    save(draft);
+    if (!save(draft)) {
+      toast({
+        title: 'Profile could not be saved',
+        description: 'Please use a smaller profile photo and try again.',
+        variant: 'destructive',
+      });
+      return;
+    }
     setEditing(false);
-    toast({ title: 'Profile updated' });
+    toast({ title: 'Profile saved on this device' });
   };
 
   const pickImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,10 +71,30 @@ const Profile = () => {
     }
     const reader = new FileReader();
     reader.onload = () => {
-      const avatar = String(reader.result);
-      if (editing) set('avatar', avatar);
-      else save({ ...profile, avatar });
-      toast({ title: 'Profile photo updated' });
+      const source = new Image();
+      source.onload = () => {
+        const maximum = 512;
+        const scale = Math.min(1, maximum / Math.max(source.width, source.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(source.width * scale));
+        canvas.height = Math.max(1, Math.round(source.height * scale));
+        const context = canvas.getContext('2d');
+        if (!context) {
+          toast({ title: 'Profile photo could not be processed', variant: 'destructive' });
+          return;
+        }
+        context.drawImage(source, 0, 0, canvas.width, canvas.height);
+        const avatar = canvas.toDataURL('image/jpeg', 0.82);
+        if (editing) {
+          set('avatar', avatar);
+          toast({ title: 'Photo ready — save changes to keep it' });
+        } else if (save({ ...profile, avatar })) {
+          toast({ title: 'Profile photo saved on this device' });
+        } else {
+          toast({ title: 'Profile photo could not be saved', variant: 'destructive' });
+        }
+      };
+      source.src = String(reader.result);
     };
     reader.readAsDataURL(file);
     e.target.value = '';
@@ -75,8 +102,11 @@ const Profile = () => {
 
   const removeImage = () => {
     if (editing) set('avatar', '');
-    else save({ ...profile, avatar: '' });
-    toast({ title: 'Profile photo removed' });
+    else if (!save({ ...profile, avatar: '' })) {
+      toast({ title: 'Profile photo could not be removed', variant: 'destructive' });
+      return;
+    }
+    toast({ title: editing ? 'Photo removed — save changes to confirm' : 'Profile photo removed' });
   };
 
   const shown = editing ? draft : profile;
