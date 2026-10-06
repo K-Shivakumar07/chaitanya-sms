@@ -10,6 +10,7 @@ export interface SearchResult {
   description: string;
   meta: string;
   link: string;
+  fileUrl?: string | null;
 }
 
 export const buildDocumentIndex = (
@@ -25,6 +26,7 @@ export const buildDocumentIndex = (
     description: m.description ?? '',
     meta: `${m.file_type} • ${m.size_label}${m.unit_no ? ` • Unit ${m.unit_no}` : ''}`,
     link: '/materials',
+    fileUrl: m.file_url,
   })),
   ...notes.map((n) => ({
     kind: 'note' as const,
@@ -34,6 +36,7 @@ export const buildDocumentIndex = (
     description: `${n.faculty} • ${n.pages} pages`,
     meta: `${n.file_type} • ${n.size_label} • ${n.uploaded_at}`,
     link: '/notes',
+    fileUrl: n.file_url,
   })),
   ...assignments.map((a) => ({
     kind: 'assignment' as const,
@@ -99,4 +102,34 @@ export const getSuggestions = (docs: SearchResult[], query: string, limit = 6): 
     .sort((a, b) => a.score - b.score || a.value.localeCompare(b.value))
     .slice(0, limit)
     .map(({ score, ...rest }) => rest);
+};
+
+const STOP = new Set('i me my want need give show get send find the a an of for on in to please can you study material materials note notes pdf pdfs assignment assignments resource resources document documents file files subject unit all any about related some download access from and is are what which'.split(' '));
+
+/** Natural-language resource lookup used by the chatbot. */
+export const findResources = (docs: SearchResult[], query: string, limit = 6): SearchResult[] => {
+  const q = query.toLowerCase();
+  const kinds = new Set<DocumentKind>();
+  if (/material/.test(q)) kinds.add('material');
+  if (/note|pdf/.test(q)) kinds.add('note');
+  if (/assignment/.test(q)) kinds.add('assignment');
+  const wantsResource = kinds.size > 0 || /resource|document|file|download/.test(q);
+  const unit = q.match(/unit\s*(\d+)/)?.[1];
+  const tokens = q.replace(/[^a-z0-9&\s]/g, ' ').split(/\s+/).filter((t) => t.length > 1 && !STOP.has(t));
+  const pool = docs.filter((d) => !kinds.size || kinds.has(d.kind));
+  const scored = pool.map((d) => {
+    const subj = d.subject.toLowerCase();
+    const title = d.title.toLowerCase();
+    let score = 0;
+    tokens.forEach((t) => {
+      if (subj.includes(t)) score += 2;
+      if (title.includes(t)) score += 1.5;
+      else if (d.description.toLowerCase().includes(t)) score += 0.5;
+    });
+    if (unit && d.meta.includes(`Unit ${unit}`)) score += 1;
+    return { d, score };
+  });
+  let hits = scored.filter((s) => s.score > 0);
+  if (!hits.length && wantsResource && !tokens.length) hits = scored;
+  return hits.sort((a, b) => b.score - a.score).slice(0, limit).map((s) => s.d);
 };
