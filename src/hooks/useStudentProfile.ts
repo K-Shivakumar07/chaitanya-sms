@@ -55,9 +55,14 @@ export const useStudentProfile = () => {
   }, []);
 
   const save = useCallback((next: StudentProfile) => {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    setProfile(next);
-    window.dispatchEvent(new Event(EVENT));
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      setProfile(next);
+      window.dispatchEvent(new Event(EVENT));
+      return true;
+    } catch {
+      return false;
+    }
   }, []);
 
   return { profile, save };

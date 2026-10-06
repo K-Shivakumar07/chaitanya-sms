@@ -46,7 +46,7 @@ const StaffShell = ({
           <img
             src={universityLogo}
             alt="Chaitanya (Deemed to be University)"
-            className="h-14 w-auto object-contain sm:h-16"
+            className="h-16 w-52 object-contain object-left sm:h-20 sm:w-72 lg:h-24 lg:w-[21rem]"
           />
           <div className="hidden sm:block">
             <p className="font-semibold leading-tight text-foreground">{title}</p>

@@ -166,12 +166,12 @@ const Header = () => {
     <header className="bg-white shadow-sm border-b">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <Link to="/dashboard" className="flex items-center space-x-3">
-            <div className="h-14 w-auto sm:h-16">
+          <Link to="/dashboard" className="flex shrink-0 items-center space-x-3">
+            <div className="h-16 w-52 sm:h-20 sm:w-72 lg:h-24 lg:w-[21rem]">
               <img
                 src={universityLogo}
                 alt="Chaitanya (Deemed to be University)"
-                className="h-full w-auto object-contain"
+                className="h-full w-full object-contain object-left"
               />
             </div>
           </Link>
