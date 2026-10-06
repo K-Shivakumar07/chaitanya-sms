@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, GraduationCap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { GraduationCap, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Select,

@@ -105,12 +105,12 @@ const PortalSidebar = ({ label, items, activeKey, onSelect, studentStyle = false
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
-                tooltip="Sign out / Switch module"
+                tooltip="Sign out"
                 className="mt-1 h-10 gap-3 px-3 font-semibold text-destructive hover:text-destructive"
                 onClick={() => select('/')}
               >
                 <LogOut className="h-5 w-5" />
-                <span>Sign out / Switch module</span>
+                <span>Sign out</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
