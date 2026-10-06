@@ -99,6 +99,7 @@ const StaffShell = ({
     </div>
   </div>
   </SidebarProvider>
-);
+  );
+};
 
 export default StaffShell;
