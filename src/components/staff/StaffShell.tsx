@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { romanSemester } from '@/context/SemesterContext';
+import { useRole } from '@/context/RoleContext';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import PortalSidebar, { type PortalNavItem } from '@/components/PortalSidebar';
 import universityLogo from '@/assets/chaitanya-university-logo.webp';
@@ -36,7 +37,16 @@ const StaffShell = ({
   navItems = [],
   activeTab = '',
   onTabChange = () => {},
-}: StaffShellProps) => (
+}: StaffShellProps) => {
+  const navigate = useNavigate();
+  const { clearRole } = useRole();
+
+  const handleSignOut = () => {
+    clearRole();
+    navigate('/');
+  };
+
+  return (
   <SidebarProvider className="h-screen min-h-0 overflow-hidden">
   <div className="flex h-screen min-h-0 w-full flex-col overflow-hidden bg-background">
     <header className="relative z-40 shrink-0 border-b border-border bg-card shadow-sm">
