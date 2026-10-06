@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, GraduationCap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { GraduationCap, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { romanSemester } from '@/context/SemesterContext';
+import { useRole } from '@/context/RoleContext';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import PortalSidebar, { type PortalNavItem } from '@/components/PortalSidebar';
 import universityLogo from '@/assets/chaitanya-university-logo.webp';
@@ -36,11 +37,20 @@ const StaffShell = ({
   navItems = [],
   activeTab = '',
   onTabChange = () => {},
-}: StaffShellProps) => (
+}: StaffShellProps) => {
+  const navigate = useNavigate();
+  const { clearRole } = useRole();
+
+  const handleSignOut = () => {
+    clearRole();
+    navigate('/');
+  };
+
+  return (
   <SidebarProvider className="h-screen min-h-0 overflow-hidden">
   <div className="flex h-screen min-h-0 w-full flex-col overflow-hidden bg-background">
     <header className="relative z-40 shrink-0 border-b border-border bg-card shadow-sm">
-      <div className="container mx-auto flex flex-wrap items-center justify-between gap-4 px-4 py-3">
+      <div className="container mx-auto flex flex-wrap items-center justify-between gap-4 px-4 py-2">
         <div className="flex items-center gap-3">
           <SidebarTrigger className="md:hidden" aria-label="Open portal menu" />
           <img
@@ -68,11 +78,9 @@ const StaffShell = ({
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline" asChild className="shrink-0">
-            <Link to="/">
-              <ArrowLeft className="h-4 w-4 sm:mr-1" />
-              <span className="hidden sm:inline">Switch module</span>
-            </Link>
+          <Button variant="outline" className="shrink-0" onClick={handleSignOut}>
+            <LogOut className="h-4 w-4 sm:mr-1" />
+            <span className="hidden sm:inline">Sign out</span>
           </Button>
         </div>
       </div>
@@ -91,6 +99,7 @@ const StaffShell = ({
     </div>
   </div>
   </SidebarProvider>
-);
+  );
+};
 
 export default StaffShell;

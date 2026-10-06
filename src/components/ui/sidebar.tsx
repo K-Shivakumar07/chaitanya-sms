@@ -226,7 +226,7 @@ const Sidebar = React.forwardRef<
         <div
           className={cn(
             "duration-200 relative w-[--sidebar-width] bg-transparent transition-[width] ease-linear",
-            desktopHeaderOffset ? "h-[calc(100svh-6.5rem)] lg:h-[calc(100svh-7.5rem)]" : "h-svh",
+            desktopHeaderOffset ? "h-[calc(100svh-6rem)] lg:h-[calc(100svh-7rem)]" : "h-svh",
             "group-data-[collapsible=offcanvas]:w-0",
             "group-data-[side=right]:rotate-180",
             variant === "floating" || variant === "inset"
@@ -237,7 +237,7 @@ const Sidebar = React.forwardRef<
         <div
           className={cn(
             "duration-200 fixed z-10 hidden w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex",
-            desktopHeaderOffset ? "bottom-0 top-[6.5rem] h-[calc(100svh-6.5rem)] lg:top-[7.5rem] lg:h-[calc(100svh-7.5rem)]" : "inset-y-0 h-svh",
+            desktopHeaderOffset ? "bottom-0 top-[6rem] h-[calc(100svh-6rem)] lg:top-[7rem] lg:h-[calc(100svh-7rem)]" : "inset-y-0 h-svh",
             side === "left"
               ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
               : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
