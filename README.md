@@ -681,9 +681,9 @@ docs/screenshots/
 
 Example:
 
-```markdown
-![Dashboard](docs/screenshots/dashboard.png)
-```
+Dashboard Image
+![Dashboard](https://github.com/K-Shivakumar07/chaitanya-sms/blob/main/Dashboard_image.png?raw=true)
+
 
 ---
 
