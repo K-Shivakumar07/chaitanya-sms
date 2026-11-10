@@ -13,3 +13,4 @@
 - [x] Show real semester and roll-number attendance records in a table.
 - [x] Enlarge the official logo across all portal headers.
 - [x] Persist every editable student profile field and photo on the current device.
+- [ ] Add a frontend-only HOD portal with interactive demo modules, keeping existing portals and backend data unchanged.
