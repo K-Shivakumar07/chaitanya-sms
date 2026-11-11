@@ -1,13 +1,13 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
-export type AppRole = 'student' | 'faculty' | 'admin';
+export type AppRole = 'student' | 'faculty' | 'admin' | 'hod';
 
 const STORAGE_KEY = 'selectedRole';
 
 const readStored = (): AppRole | null => {
   if (typeof window === 'undefined') return null;
   const raw = window.localStorage.getItem(STORAGE_KEY);
-  return raw === 'student' || raw === 'faculty' || raw === 'admin' ? raw : null;
+  return raw === 'student' || raw === 'faculty' || raw === 'admin' || raw === 'hod' ? raw : null;
 };
 
 interface RoleContextValue {

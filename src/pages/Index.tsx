@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GraduationCap, ArrowRight, BookOpen, Shield, Users } from 'lucide-react';
+import { GraduationCap, ArrowRight, BookOpen, Shield, Users, Building2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useRole, AppRole } from '@/context/RoleContext';
 
@@ -40,6 +40,15 @@ const MODULES: {
     icon: Shield,
     accent: 'bg-purple-600',
   },
+  {
+    role: 'hod',
+    title: 'Head of Department',
+    path: '/hod',
+    blurb: 'Monitor department academics, faculty, students and approvals.',
+    points: ['Student and faculty oversight', 'Attendance and performance trends', 'Approvals, announcements and reports'],
+    icon: Building2,
+    accent: 'bg-primary',
+  },
 ];
 
 const Index = () => {
@@ -65,7 +74,7 @@ const Index = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {MODULES.map((m) => {
             const Icon = m.icon;
             return (

@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 import Attendance from "./pages/Attendance";
 import Assistant from "./pages/Assistant";
 import AssistantBot from "./components/AssistantBot";
+import HODPortal from "./pages/HODPortal";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/student" element={<SelectSemester />} />
             <Route path="/faculty" element={<Faculty />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/hod" element={<HODPortal />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/syllabus" element={<Syllabus />} />
             <Route path="/timetable" element={<Timetable />} />

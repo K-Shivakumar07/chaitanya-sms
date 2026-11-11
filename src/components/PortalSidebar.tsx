@@ -31,9 +31,10 @@ interface PortalSidebarProps {
   onSelect: (key: string) => void;
   studentStyle?: boolean;
   simplifiedStyle?: boolean;
+  scrollable?: boolean;
 }
 
-const PortalSidebar = ({ label, items, activeKey, onSelect, studentStyle = false, simplifiedStyle = false }: PortalSidebarProps) => {
+const PortalSidebar = ({ label, items, activeKey, onSelect, studentStyle = false, simplifiedStyle = false, scrollable = false }: PortalSidebarProps) => {
   const { isMobile, setOpenMobile, state } = useSidebar();
   const { profile } = useStudentProfile();
   const { branch, semester } = useSemester();
@@ -55,7 +56,7 @@ const PortalSidebar = ({ label, items, activeKey, onSelect, studentStyle = false
       desktopHeaderOffset={streamlined}
       className={streamlined ? 'student-portal-sidebar' : undefined}
     >
-      <SidebarContent className={streamlined ? 'overflow-hidden px-2 py-3' : undefined}>
+      <SidebarContent className={streamlined ? `px-2 py-3 ${scrollable ? 'overflow-y-auto' : 'overflow-hidden'}` : undefined}>
         <SidebarGroup className={streamlined ? 'p-0' : undefined}>
           <SidebarGroupLabel className={streamlined ? 'mb-2 px-3 text-[11px] font-semibold uppercase text-sidebar-foreground/60' : undefined}>
             {studentStyle ? 'Student workspace' : label}
