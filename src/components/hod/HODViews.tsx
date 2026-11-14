@@ -1,6 +1,6 @@
-import { useMemo, useState, type Dispatch, type FormEvent, type SetStateAction } from 'react';
+import React, { useMemo, useState, type Dispatch, type FormEvent, type SetStateAction } from 'react';
 import {
-  Activity, ArrowDown, ArrowUp, ArrowUpDown, Bell, BookOpen, CalendarDays, Check, CheckCircle2,
+  Activity, ArrowUpDown, BookOpen, CalendarDays, Check, CheckCircle2,
   ClipboardCheck, Clock3, Download, FileBarChart, FileText, GraduationCap, Layers3, Plus, Search,
   Send, Users, X,
 } from 'lucide-react';
@@ -20,8 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  hodAttendanceTrend, hodDemoAttendance, hodDemoFaculty, hodDemoSections, hodDemoStudents,
-  hodPerformanceBySemester, hodSubjectPerformance, hodWorkloadByFaculty,
+  hodAttendanceTrend, hodPerformanceBySemester, hodSubjectPerformance,
   type HODAnnouncement, type HODAttendance, type HODAssignment, type HODExam, type HODFaculty,
   type HODLeaveRequest, type HODNotification, type HODSection, type HODStudent, type HODSubject,
 } from '@/data/hodDemoData';
@@ -49,7 +48,7 @@ interface HODViewsProps {
   setThreshold: (value: number) => void;
 }
 
-const sections = ['All sections', 'CSE-A', 'CSE-B'];
+const sections = ['All sections', 'A', 'B'];
 const semesters = [1, 3, 5, 7];
 const initials = (name: string) => name.split(' ').map((part) => part[0]).slice(0, 2).join('');
 const semesterName = (number: number) => `Semester ${number}`;
@@ -134,6 +133,7 @@ const HODViews = ({ active, semester, onNavigate, students, setStudents, faculty
   const [attendanceSearch, setAttendanceSearch] = useState('');
   const [assignmentSearch, setAssignmentSearch] = useState('');
   const [leaveFilter, setLeaveFilter] = useState('All requests');
+  const [leaveRoleFilter, setLeaveRoleFilter] = useState('All roles');
   const [decision, setDecision] = useState<{ item: HODLeaveRequest; status: 'Approved' | 'Rejected' } | null>(null);
   const [decisionReason, setDecisionReason] = useState('');
   const [announcementFormOpen, setAnnouncementFormOpen] = useState(false);
@@ -144,6 +144,7 @@ const HODViews = ({ active, semester, onNavigate, students, setStudents, faculty
   const [announcementPriority, setAnnouncementPriority] = useState<'Normal' | 'Important'>('Normal');
   const [reportType, setReportType] = useState('Student Information Report');
   const [reportSemester, setReportSemester] = useState(String(semester));
+  const [reportSection, setReportSection] = useState('All sections');
   const [reportPreview, setReportPreview] = useState(false);
   const [notificationFilter, setNotificationFilter] = useState('All notifications');
   const [hodName, setHodName] = useState('Dr. Ananya Rao');
@@ -158,7 +159,7 @@ const HODViews = ({ active, semester, onNavigate, students, setStudents, faculty
     const q = studentSearch.toLowerCase();
     return (!q || `${row.id} ${row.name} ${row.email}`.toLowerCase().includes(q)) &&
       (studentStatus === 'All statuses' || row.status === studentStatus) &&
-      (studentSection === 'All sections' || `${row.branch}-${row.section}` === studentSection);
+      (studentSection === 'All sections' || row.section === studentSection);
   }).sort((a, b) => studentSort === 'name' ? a.name.localeCompare(b.name) : b[studentSort] - a[studentSort]),
   [currentStudents, studentSearch, studentStatus, studentSection, studentSort]);
   const pageSize = 5;
@@ -205,13 +206,32 @@ const HODViews = ({ active, semester, onNavigate, students, setStudents, faculty
       rows = faculty.map((row) => [row.id, row.name, row.subjects.join('; '), String(row.sections), String(row.weeklyHours)]);
     } else if (reportType === 'Attendance Report') {
       headers = ['Student ID', 'Student Name', 'Section', 'Semester', 'Subject', 'Held', 'Attended', 'Percent'];
-      rows = attendance.filter((row) => row.semester === Number(reportSemester)).map((row) => [row.studentId, row.studentName, row.section, String(row.semester), row.subject, String(row.held), String(row.attended), pct(row.held ? (row.attended / row.held) * 100 : 0)]);
+      rows = attendance.filter((row) => row.semester === Number(reportSemester) && (reportSection === 'All sections' || row.section === `CSE-${reportSection}`)).map((row) => [row.studentId, row.studentName, row.section, String(row.semester), row.subject, String(row.held), String(row.attended), pct(row.held ? (row.attended / row.held) * 100 : 0)]);
     } else if (reportType === 'Assignment Submission Report') {
       headers = ['Title', 'Subject', 'Faculty', 'Section', 'Students', 'Submitted', 'Evaluation'];
-      rows = assignments.filter((row) => row.semester === Number(reportSemester)).map((row) => [row.title, row.subject, row.faculty, row.section, String(row.students), String(row.submitted), row.evaluation]);
+      rows = assignments.filter((row) => row.semester === Number(reportSemester) && (reportSection === 'All sections' || row.section === `CSE-${reportSection}`)).map((row) => [row.title, row.subject, row.faculty, row.section, String(row.students), String(row.submitted), row.evaluation]);
+    } else if (reportType === 'Faculty Information Report' || reportType === 'Faculty Workload Report') {
+      headers = ['Faculty ID', 'Name', 'Email', 'Designation', 'Department', 'Subjects', 'Sections', 'Weekly Hours', 'Attendance Submitted'];
+      rows = faculty.map((row) => [row.id, row.name, row.email, row.designation, row.department, row.subjects.join('; '), String(row.sections), String(row.weeklyHours), row.attendanceSubmitted ? 'Yes' : 'No']);
+    } else if (reportType === 'Leave Summary Report') {
+      headers = ['Request ID', 'Applicant', 'Role', 'Type', 'From', 'To', 'Days', 'Status', 'Decision reason'];
+      rows = leaves.map((row) => [row.id, row.applicant, row.role, row.leaveType, row.from, row.to, String(row.days), row.status, row.decisionReason ?? '']);
+    } else if (reportType === 'Examination Report') {
+      headers = ['Examination', 'Subject', 'Section', 'Semester', 'Date', 'Pass rate', 'Backlogs', 'Status'];
+      rows = exams.filter((row) => row.semester === Number(reportSemester) && (reportSection === 'All sections' || row.section === `CSE-${reportSection}`)).map((row) => [row.name, row.subject, row.section, String(row.semester), row.date, pct(row.passRate), String(row.backlogs), row.status]);
+    } else if (reportType === 'Subject-wise Result Report' || reportType === 'Academic Performance Report') {
+      headers = ['Subject', 'Pass rate'];
+      rows = hodSubjectPerformance.map((row) => [row.subject, pct(row.passRate)]);
+    } else if (reportType === 'Section-wise Performance Report') {
+      headers = ['Section', 'Students', 'Average CGPA', 'Average attendance'];
+      rows = sectionRows.filter((row) => row.semester === Number(reportSemester) && (reportSection === 'All sections' || row.name.endsWith(reportSection))).map((section) => {
+        const profiles = students.filter((row) => row.semester === section.semester && row.section === section.name.slice(-1));
+        const sectionAttendance = attendance.filter((row) => row.semester === section.semester && row.section === section.name);
+        return [section.name, String(section.students), profiles.length ? (profiles.reduce((sum, row) => sum + row.cgpa, 0) / profiles.length).toFixed(1) : '—', sectionAttendance.length ? pct(sectionAttendance.reduce((sum, row) => sum + row.attended / Math.max(row.held, 1) * 100, 0) / sectionAttendance.length) : '—'];
+      });
     } else {
       headers = ['Student ID', 'Student Name', 'Email', 'Branch', 'Section', 'Semester', 'CGPA', 'Attendance', 'Status'];
-      rows = students.filter((row) => row.semester === Number(reportSemester)).map((row) => [row.id, row.name, row.email, row.branch, row.section, String(row.semester), row.cgpa.toFixed(1), pct(row.attendance), row.status]);
+      rows = students.filter((row) => row.semester === Number(reportSemester) && (reportSection === 'All sections' || row.section === reportSection)).map((row) => [row.id, row.name, row.email, row.branch, row.section, String(row.semester), row.cgpa.toFixed(1), pct(row.attendance), row.status]);
     }
     const csv = [headers, ...rows].map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(',')).join('\n');
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
@@ -286,10 +306,10 @@ const HODViews = ({ active, semester, onNavigate, students, setStudents, faculty
       </Panel>
       <Panel title="Quick access">
         <div className="grid grid-cols-2 gap-2">
-          {[
+          {([
             ['Students', 'students', Users], ['Faculty', 'faculty', GraduationCap], ['Attendance', 'attendance', ClipboardCheck], ['Performance', 'performance', Activity],
             ['Approvals', 'leaves', CheckCircle2], ['Reports', 'reports', FileBarChart],
-          ].map(([label, key, Icon]) => <Button key={String(key)} variant="outline" className="h-auto min-h-14 justify-start whitespace-normal text-left" onClick={() => onNavigate(String(key))}><Icon className="h-4 w-4 shrink-0 text-primary" />{label}</Button>)}
+          ] as const).map(([label, key, Icon]) => <Button key={key} variant="outline" className="h-auto min-h-14 justify-start whitespace-normal text-left" onClick={() => onNavigate(key)}><Icon className="h-4 w-4 shrink-0 text-primary" />{label}</Button>)}
         </div>
       </Panel>
     </section>
@@ -317,7 +337,7 @@ const HODViews = ({ active, semester, onNavigate, students, setStudents, faculty
     <Panel title={`${filteredStudents.length} students in ${semesterName(semester)}`}>
       <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center">
         <SearchBox value={studentSearch} onChange={(value) => { setStudentSearch(value); setStudentPage(1); }} placeholder="Search name, roll number or email" />
-        <Select value={studentSection} onValueChange={(value) => { setStudentSection(value); setStudentPage(1); }}><SelectTrigger className="w-full sm:w-40"><SelectValue /></SelectTrigger><SelectContent>{sections.map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select>
+        <Select value={studentSection} onValueChange={(value) => { setStudentSection(value); setStudentPage(1); }}><SelectTrigger className="w-full sm:w-40"><SelectValue /></SelectTrigger><SelectContent>{sections.map((value) => <SelectItem key={value} value={value}>{value === 'All sections' ? value : `CSE-${value}`}</SelectItem>)}</SelectContent></Select>
         <Select value={studentStatus} onValueChange={(value) => { setStudentStatus(value); setStudentPage(1); }}><SelectTrigger className="w-full sm:w-44"><SelectValue /></SelectTrigger><SelectContent>{['All statuses', 'Good standing', 'Needs support', 'At risk'].map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select>
         <Button variant="outline" onClick={handleStudentSort}><ArrowUpDown className="h-4 w-4" />Sort: {studentSort}</Button>
       </div>
@@ -335,7 +355,7 @@ const HODViews = ({ active, semester, onNavigate, students, setStudents, faculty
       <div className="mb-5 grid gap-4 sm:grid-cols-3">{[{ label: 'Faculty members', value: faculty.length }, { label: 'Weekly teaching hours', value: faculty.reduce((sum, row) => sum + row.weeklyHours, 0) }, { label: 'Submissions pending', value: faculty.filter((row) => !row.attendanceSubmitted).length }].map((item) => <Card key={item.label} className="rounded-md shadow-none"><CardContent className="p-4"><p className="text-sm text-muted-foreground">{item.label}</p><p className="mt-1 text-2xl font-bold">{item.value}</p></CardContent></Card>)}</div>
       <div className="grid gap-5 xl:grid-cols-[1.25fr_1fr]"><Panel title="Faculty directory"><div className="mb-4"><SearchBox value={facultySearch} onChange={setFacultySearch} placeholder="Search faculty or subject" /></div><DataTable headers={['Faculty', 'Subjects', 'Sections', 'Hours / week', 'Attendance']}>
         {filtered.length ? filtered.map((row) => <TableRow key={row.id}><TableCell><p className="font-medium">{row.name}</p><p className="text-xs text-muted-foreground">{row.designation}</p></TableCell><TableCell className="min-w-36">{row.subjects.join(', ')}</TableCell><TableCell>{row.sections}</TableCell><TableCell><Input aria-label={`Weekly hours for ${row.name}`} type="number" min={0} max={40} value={row.weeklyHours} className="h-9 w-20" onChange={(event) => setFaculty((current) => current.map((item) => item.id === row.id ? { ...item, weeklyHours: Math.max(0, Math.min(40, Number(event.target.value))) } : item))} /></TableCell><TableCell><StatusBadge>{row.attendanceSubmitted ? 'Submitted' : 'Pending'}</StatusBadge></TableCell></TableRow>) : <EmptyRow count={5} />}
-      </DataTable></Panel><Panel title="Weekly workload distribution"><div className="h-72 w-full"><ResponsiveContainer width="100%" height="100%"><BarChart data={hodWorkloadByFaculty} layout="vertical" margin={{ top: 0, right: 20, left: 20, bottom: 0 }}><CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" /><XAxis type="number" domain={[0, 24]} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} /><YAxis type="category" dataKey="name" width={100} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} /><Tooltip /><Bar dataKey="hours" name="Weekly hours" fill="hsl(var(--primary))" radius={[0, 3, 3, 0]} /></BarChart></ResponsiveContainer></div><p className="text-xs text-muted-foreground">Workload edits apply to this local demonstration only.</p></Panel></div>
+      </DataTable></Panel><Panel title="Weekly workload distribution"><div className="h-72 w-full"><ResponsiveContainer width="100%" height="100%"><BarChart data={faculty.map((row) => ({ name: row.name.replace(/^(Dr\.|Prof\.)\s/, ''), hours: row.weeklyHours }))} layout="vertical" margin={{ top: 0, right: 20, left: 20, bottom: 0 }}><CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" /><XAxis type="number" domain={[0, 24]} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} /><YAxis type="category" dataKey="name" width={100} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} /><Tooltip /><Bar dataKey="hours" name="Weekly hours" fill="hsl(var(--primary))" radius={[0, 3, 3, 0]} /></BarChart></ResponsiveContainer></div><p className="text-xs text-muted-foreground">Workload edits apply to this local demonstration only.</p></Panel></div>
     </>;
   }
 
@@ -391,9 +411,10 @@ const HODViews = ({ active, semester, onNavigate, students, setStudents, faculty
   </>;
 
   if (active === 'leaves') {
-    const visibleLeaves = leaves.filter((row) => leaveFilter === 'All requests' || row.status === leaveFilter);
-    return <><PageHeading eyebrow="Department approvals" title="Leave approvals" detail="Review demonstration requests. Rejections require a recorded reason." action={<Select value={leaveFilter} onValueChange={setLeaveFilter}><SelectTrigger className="w-44"><SelectValue /></SelectTrigger><SelectContent>{['All requests', 'Pending', 'Approved', 'Rejected'].map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select>} />
+    const visibleLeaves = leaves.filter((row) => (leaveFilter === 'All requests' || row.status === leaveFilter) && (leaveRoleFilter === 'All roles' || row.role === leaveRoleFilter));
+    return <><PageHeading eyebrow="Department approvals" title="Leave approvals" detail="Review demonstration requests. Rejections require a recorded reason." />
       <div className="mb-5 grid gap-4 sm:grid-cols-3">{[{ label: 'Pending requests', value: pendingLeaves }, { label: 'Approved', value: leaves.filter((row) => row.status === 'Approved').length }, { label: 'Rejected', value: leaves.filter((row) => row.status === 'Rejected').length }].map((item) => <Card key={item.label} className="rounded-md shadow-none"><CardContent className="p-4"><p className="text-sm text-muted-foreground">{item.label}</p><p className="mt-1 text-2xl font-bold">{item.value}</p></CardContent></Card>)}</div>
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row"><Select value={leaveRoleFilter} onValueChange={setLeaveRoleFilter}><SelectTrigger className="w-full sm:w-44"><SelectValue /></SelectTrigger><SelectContent>{['All roles', 'Student', 'Faculty'].map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select><Select value={leaveFilter} onValueChange={setLeaveFilter}><SelectTrigger className="w-full sm:w-44"><SelectValue /></SelectTrigger><SelectContent>{['All requests', 'Pending', 'Approved', 'Rejected'].map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select></div>
       <Panel title="Request history"><DataTable headers={['Request', 'Applicant', 'Type', 'Dates', 'Days', 'Reason', 'Status', 'Decision']}>
         {visibleLeaves.length ? visibleLeaves.map((row) => <TableRow key={row.id}><TableCell className="font-mono text-xs">{row.id}</TableCell><TableCell className="min-w-32">{row.applicant}<p className="text-xs text-muted-foreground">{row.role}</p></TableCell><TableCell>{row.leaveType}</TableCell><TableCell className="whitespace-nowrap">{row.from} – {row.to}</TableCell><TableCell>{row.days}</TableCell><TableCell className="min-w-36">{row.reason}{row.decisionReason && <p className="mt-1 text-xs text-destructive">Decision: {row.decisionReason}</p>}</TableCell><TableCell><StatusBadge>{row.status}</StatusBadge></TableCell><TableCell><div className="flex gap-1">{row.status === 'Pending' ? <><Button size="sm" variant="outline" aria-label={`Approve ${row.id}`} onClick={() => setDecision({ item: row, status: 'Approved' })}><Check className="h-4 w-4" /></Button><Button size="sm" variant="outline" aria-label={`Reject ${row.id}`} onClick={() => setDecision({ item: row, status: 'Rejected' })}><X className="h-4 w-4" /></Button></> : <span className="text-xs text-muted-foreground">Processed</span>}</div></TableCell></TableRow>) : <EmptyRow count={8} />}
       </DataTable></Panel>
@@ -408,7 +429,7 @@ const HODViews = ({ active, semester, onNavigate, students, setStudents, faculty
   </>;
 
   if (active === 'reports') return <><PageHeading eyebrow="Department insights" title="Reports & analytics" detail="Preview a report, then export its demonstration rows as CSV." />
-    <Panel title="Report builder"><div className="grid gap-4 md:grid-cols-3"><div className="space-y-2"><Label>Report category</Label><Select value={reportType} onValueChange={(value) => { setReportType(value); setReportPreview(false); }}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['Student Information Report', 'Faculty Information Report', 'Attendance Report', 'Academic Performance Report', 'Subject-wise Result Report', 'Section-wise Performance Report', 'Faculty Workload Report', 'Assignment Submission Report', 'Examination Report', 'Leave Summary Report'].map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select></div><div className="space-y-2"><Label>Academic year</Label><Select defaultValue="2026–27"><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="2026–27">2026–27</SelectItem><SelectItem value="2025–26">2025–26</SelectItem></SelectContent></Select></div><div className="space-y-2"><Label>Semester</Label><Select value={reportSemester} onValueChange={(value) => { setReportSemester(value); setReportPreview(false); }}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{semesters.map((value) => <SelectItem key={value} value={String(value)}>{semesterName(value)}</SelectItem>)}</SelectContent></Select></div></div><div className="mt-5 flex flex-wrap gap-2"><Button onClick={() => setReportPreview(true)}><FileBarChart className="h-4 w-4" />Preview report</Button><Button variant="outline" onClick={exportCsv}><Download className="h-4 w-4" />Export CSV</Button><Button variant="outline" onClick={() => window.print()}>Print</Button></div>
+    <Panel title="Report builder"><div className="grid gap-4 md:grid-cols-4"><div className="space-y-2"><Label>Report category</Label><Select value={reportType} onValueChange={(value) => { setReportType(value); setReportPreview(false); }}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['Student Information Report', 'Faculty Information Report', 'Attendance Report', 'Academic Performance Report', 'Subject-wise Result Report', 'Section-wise Performance Report', 'Faculty Workload Report', 'Assignment Submission Report', 'Examination Report', 'Leave Summary Report'].map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select></div><div className="space-y-2"><Label>Academic year</Label><Select defaultValue="2026–27"><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="2026–27">2026–27</SelectItem><SelectItem value="2025–26">2025–26</SelectItem></SelectContent></Select></div><div className="space-y-2"><Label>Semester</Label><Select value={reportSemester} onValueChange={(value) => { setReportSemester(value); setReportPreview(false); }}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{semesters.map((value) => <SelectItem key={value} value={String(value)}>{semesterName(value)}</SelectItem>)}</SelectContent></Select></div><div className="space-y-2"><Label>Section</Label><Select value={reportSection} onValueChange={(value) => { setReportSection(value); setReportPreview(false); }}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['All sections', 'A', 'B'].map((value) => <SelectItem key={value} value={value}>{value === 'All sections' ? value : `CSE-${value}`}</SelectItem>)}</SelectContent></Select></div></div><div className="mt-5 flex flex-wrap gap-2"><Button onClick={() => setReportPreview(true)}><FileBarChart className="h-4 w-4" />Preview report</Button><Button variant="outline" onClick={exportCsv}><Download className="h-4 w-4" />Export CSV</Button><Button variant="outline" onClick={() => window.print()}>Print</Button></div>
     {reportPreview && <div className="mt-6 border-t pt-5"><div className="mb-3 flex items-center justify-between"><div><h2 className="font-semibold">{reportType}</h2><p className="text-sm text-muted-foreground">{semesterName(Number(reportSemester))} · Academic year 2026–27 · Demonstration records</p></div><Badge variant="outline">Preview</Badge></div><DataTable headers={['Preview field', 'Value']}>{[['Department', 'CSE (AI&ML)'], ['Semester', semesterName(Number(reportSemester))], ['Sample student profiles', students.filter((row) => row.semester === Number(reportSemester)).length], ['Sample faculty profiles', faculty.length], ['Attendance records', attendance.filter((row) => row.semester === Number(reportSemester)).length]].map(([label, value]) => <TableRow key={String(label)}><TableCell>{label}</TableCell><TableCell className="font-medium">{value}</TableCell></TableRow>)}</DataTable></div>}
     <p className="mt-4 text-xs text-muted-foreground">Exports contain only seeded demonstration data. No official academic records are included.</p></Panel>
   </>;
