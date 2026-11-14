@@ -233,11 +233,11 @@ const HODViews = ({ active, semester, onNavigate, students, setStudents, faculty
       headers = ['Student ID', 'Student Name', 'Email', 'Branch', 'Section', 'Semester', 'CGPA', 'Attendance', 'Status'];
       rows = students.filter((row) => row.semester === Number(reportSemester) && (reportSection === 'All sections' || row.section === reportSection)).map((row) => [row.id, row.name, row.email, row.branch, row.section, String(row.semester), row.cgpa.toFixed(1), pct(row.attendance), row.status]);
     }
-    const csv = [headers, ...rows].map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(',')).join('\n');
+    const csv = [headers, ...rows].map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(',')).join('\n');
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
     const link = document.createElement('a');
     link.href = url;
-    link.download = `hod-${reportType.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-')}-demo.csv`;
+    link.download = `hod-${reportType.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-demo.csv`;
     link.click();
     URL.revokeObjectURL(url);
   };
